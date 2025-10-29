@@ -1,0 +1,57 @@
+## Project Context: ML Fault Tolerance for Space Applications
+
+**Goal:**
+We are conducting a Master's thesis level experiment to evaluate the effectiveness and efficiency of various software-based fault tolerance techniques for a machine learning object detection model (YOLOv8n trained for planes/ships on satellite imagery). The target platform is an NVIDIA Jetson Orin Nano, simulating deployment in a space environment where Single Event Upsets (SEUs) can cause transient bit-flip faults in the GPU.
+
+**Key Metrics:**
+1.  **Baseline mAP:** Model accuracy (mean Average Precision) without faults.
+2.  **Overhead:** The performance (latency) and power cost of each technique.
+3.  **SDC Rate (Silent Data Corruption):** Frequency of incorrect outputs without crashes under fault injection.
+4.  **Crash/Hang Rate:** Frequency of application/system failures under fault injection.
+5.  **mAP Under Fault:** The final mAP score calculated from the 10,000 faulty run outputs.
+
+**Trained Model:**
+A baseline YOLOv8n model (`Plane_Ship_Detection/Plane_Ship_Model.pt`) has been trained for 200 epochs on the custom dataset using GPU (PyTorch+CUDA).
+
+**Validation Data:**
+A validation set of 201 images with corresponding ground truth labels (YOLO `.txt` format) is available. A file `validation_dataset_list.txt` lists the relative paths to image/label pairs.
+
+**Experimental Plan (3 Parts):**
+
+**Part 1: Baseline Performance & Overhead Measurement (No Faults)**
+* **Goal:** Measure mAP and average inference time for the baseline model and each technique implementation *without* injecting faults.
+* **Orchestrator Script:** `run_evaluation.py` (a Python script).
+* **Mode:** **Sequential**. It will iterate through the `validation_dataset_list.txt` once (201 images total).
+* **Process (per image):**
+    1.  Call the appropriate "Inference Worker" script (e.g., `baseline_inference.py`, `technique1_inference.py`).
+    2.  Capture the worker's JSON output (predictions + time).
+    3.  Call the `compare_results.py:calculate_ap_for_image()` function, passing it the worker's predictions and the ground truth label path.
+    4.  Store the returned per-image AP score and the inference time.
+* **Final Output:** After the loop, average the 201 AP scores to get the final **mAP** and average the 201 inference times to get the **Average Inference Time**. This is repeated for the baseline and each technique.
+
+**Part 2 & 3: Fault Impact Measurement (With Faults)**
+* **Goal:** Measure the SDC Rate, Crash Rate, and "mAP Under Fault" for the baseline model (Part 2) and each technique (Part 3).
+* **Orchestrator Script:** `run_campaign.sh` (a `bash` script).
+* **Mode:** **Random**. It will iterate **10,000 times**, randomly selecting an image for each run.
+* **Process (per iteration):**
+    1.  **Golden Run:** Call the appropriate "Inference Worker" (e.g., `baseline_inference.py`) *without* fault $\rightarrow$ save output to `temp_golden.json`.
+    2.  **Faulty Run:** Call the *same* worker *with* `nvbitfi` injecting one fault $\rightarrow$ save output to `temp_faulty.json` (or note a crash/hang).
+    3.  **Reliability Check:** Call `compare_results.py:classify_fault_outcome()` with `temp_golden.json` and `temp_faulty.json`.
+    4.  Append the string result (e.g., `MASKED`, `SDC_M`, `CRASH`) to a primary log file (e.g., `baseline_outcomes.log`).
+    5.  **mAP Data Collection:** Also save the `temp_faulty.json` content (the actual predictions) to a separate, large log file (e.g., `baseline_faulty_predictions.log`).
+* **Final Output:**
+    1.  Analyze `baseline_outcomes.log` to get the **SDC Rate** and **Crash/Hang Rate**.
+    2.  Run the `baseline_faulty_predictions.log` (all 10,000 faulty predictions) through the AP calculation logic (from Part 1) to get the final **"mAP Under Fault"** score.
+
+**Modular Python Scripts:**
+1.  **`run_evaluation.py` (Main Python Script):** Orchestrates Part 1 (sequential mAP).
+2.  **`xxx_inference.py` (Worker Scripts):** One for each technique (e.g., `baseline_inference.py`, `tmr_inference.py`). **Technique logic is isolated here.** Called by both main orchestrators.
+3.  **`compare_results.py` (Comparison Library):**
+    * Contains `calculate_ap_for_image()`: Called by `run_evaluation.py` for mAP calculation (compares predictions vs. ground truth).
+    * Contains `classify_fault_outcome()`: Called by `run_campaign.sh` for reliability (compares golden vs. faulty predictions). **The detailed SDC (M, P, L, C) logic here still needs full implementation.**
+
+**Next Immediate Task:**
+Finalize and test the Python scripts required for **Part 1** of the plan:
+1.  Complete `baseline_inference.py` (worker).
+2.  Complete `compare_results.py` (specifically the `calculate_ap_for_image` function).
+3.  Complete `run_evaluation.py` (main evaluator) to run sequentially, call the worker and comparator, and output baseline mAP and average time.

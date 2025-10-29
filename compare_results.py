@@ -9,6 +9,10 @@ import os
 IOU_THRESHOLD = 0.8 # threshold for TP/FP: means if IoU >= 0.8, it's a TP otherwise FP
 NUM_CLASSES = 2 # 0: plane, 1: ship (Adjust if different)
 
+# Fault Classification Thresholds
+MASKED_TOLERANCE = 0.001          # Tolerance for floating-point differences (MASKED detection)
+MATCHING_IOU_THRESHOLD = 0.7      # Minimum IoU to match boxes between golden and faulty runs (lower than IOU_THRESHOLD to detect location errors)
+
 # --- Helper Function: Convert YOLO format to xyxy ---
 def yolo_to_xyxy(yolo_box):
     """Converts YOLO box [xc, yc, w, h] (normalized) to [x1, y1, x2, y2] (normalized)."""
@@ -171,27 +175,208 @@ def calculate_ap_for_image(predictions_list, ground_truth_path_str):
         print(f"    --- End Error ---")
         return -1.0 # Indicate calculation error
 
-# --- Example Usage (for testing this script directly) ---
-if __name__ == "__main__":
-     # Create dummy data matching worker output and GT format
-     dummy_predictions = [
-         {'box_xyxyn': [0.1, 0.1, 0.3, 0.3], 'label_id': 1, 'score': 0.95},
-         {'box_xyxyn': [0.5, 0.5, 0.7, 0.7], 'label_id': 0, 'score': 0.88},
-         {'box_xyxyn': [0.15, 0.15, 0.35, 0.35], 'label_id': 1, 'score': 0.70}, # FP likely
-     ]
-     # Create a dummy GT file
-     dummy_gt_path = "dummy_gt.txt"
-     with open(dummy_gt_path, "w") as f:
-         f.write("1 0.2 0.2 0.2 0.2\n") # GT Ship (overlaps well with pred 0, poorly with 2)
-         f.write("0 0.6 0.6 0.2 0.2\n") # GT Plane (overlaps well with pred 1)
-         
-     print(f"Calculating AP for dummy data with GT file '{dummy_gt_path}'...")
-     ap_score = calculate_ap_for_image(dummy_predictions, dummy_gt_path)
-     
-     if ap_score >= 0:
-         print(f"Calculated AP score: {ap_score:.4f}")
-     else:
-         print("AP calculation failed.")
-         
-     # Clean up dummy file
-     os.remove(dummy_gt_path)
+# --- Fault Classification Functions ---
+
+def boxes_are_similar(pred1, pred2, tolerance=MASKED_TOLERANCE):
+    """
+    Check if two prediction dictionaries are similar within tolerance.
+
+    Args:
+        pred1 (dict): First prediction with 'box_xyxyn', 'label_id', 'score'
+        pred2 (dict): Second prediction with 'box_xyxyn', 'label_id', 'score'
+        tolerance (float): Maximum allowed difference for floating-point values
+
+    Returns:
+        bool: True if predictions are similar within tolerance
+    """
+    # Check if label_id matches (must be exact)
+    if pred1['label_id'] != pred2['label_id']:
+        return False
+
+    # Check if score is within tolerance
+    if abs(pred1['score'] - pred2['score']) > tolerance:
+        return False
+
+    # Check if all box coordinates are within tolerance
+    box1 = pred1['box_xyxyn']
+    box2 = pred2['box_xyxyn']
+    for coord1, coord2 in zip(box1, box2):
+        if abs(coord1 - coord2) > tolerance:
+            return False
+
+    return True
+
+def predictions_are_masked(golden_preds, faulty_preds, tolerance=MASKED_TOLERANCE):
+    """
+    Check if two prediction lists are effectively identical (MASKED fault).
+
+    Args:
+        golden_preds (list): Golden run predictions
+        faulty_preds (list): Faulty run predictions
+        tolerance (float): Tolerance for floating-point comparison
+
+    Returns:
+        bool: True if predictions are masked (identical within tolerance)
+    """
+    # Must have same number of predictions
+    if len(golden_preds) != len(faulty_preds):
+        return False
+
+    # Empty predictions are considered masked
+    if len(golden_preds) == 0:
+        return True
+
+    # Sort both lists by score (descending) to ensure consistent comparison
+    golden_sorted = sorted(golden_preds, key=lambda x: x['score'], reverse=True)
+    faulty_sorted = sorted(faulty_preds, key=lambda x: x['score'], reverse=True)
+
+    # Check if all predictions match
+    for g_pred, f_pred in zip(golden_sorted, faulty_sorted):
+        if not boxes_are_similar(g_pred, f_pred, tolerance):
+            return False
+
+    return True
+
+def match_boxes(golden_preds, faulty_preds, iou_threshold=MATCHING_IOU_THRESHOLD):
+    """
+    Match boxes between golden and faulty predictions based on IoU and class.
+
+    Args:
+        golden_preds (list): Golden run predictions
+        faulty_preds (list): Faulty run predictions
+        iou_threshold (float): Minimum IoU to consider a match
+
+    Returns:
+        dict: {
+            'matched_pairs': [(g_idx, f_idx, iou, same_class), ...],
+            'unmatched_golden': [g_idx, ...],
+            'unmatched_faulty': [f_idx, ...]
+        }
+    """
+    if not golden_preds or not faulty_preds:
+        return {
+            'matched_pairs': [],
+            'unmatched_golden': list(range(len(golden_preds))),
+            'unmatched_faulty': list(range(len(faulty_preds)))
+        }
+
+    # Convert to tensors
+    golden_boxes = torch.tensor([p['box_xyxyn'] for p in golden_preds], dtype=torch.float32)
+    faulty_boxes = torch.tensor([p['box_xyxyn'] for p in faulty_preds], dtype=torch.float32)
+
+    # Calculate IoU matrix: [num_golden, num_faulty]
+    iou_matrix = box_iou(golden_boxes, faulty_boxes)
+
+    # Track matched indices
+    matched_golden = set()
+    matched_faulty = set()
+    matched_pairs = []
+
+    # Greedy matching: process from highest to lowest IoU
+    # Flatten the IoU matrix with indices
+    matches = []
+    for g_idx in range(len(golden_preds)):
+        for f_idx in range(len(faulty_preds)):
+            iou_val = iou_matrix[g_idx, f_idx].item()
+            if iou_val >= iou_threshold:
+                same_class = (golden_preds[g_idx]['label_id'] == faulty_preds[f_idx]['label_id'])
+                matches.append((g_idx, f_idx, iou_val, same_class))
+
+    # Sort by IoU (descending) for greedy matching
+    matches.sort(key=lambda x: x[2], reverse=True)
+
+    # Assign matches greedily (highest IoU first, no double-matching)
+    for g_idx, f_idx, iou_val, same_class in matches:
+        if g_idx not in matched_golden and f_idx not in matched_faulty:
+            matched_pairs.append((g_idx, f_idx, iou_val, same_class))
+            matched_golden.add(g_idx)
+            matched_faulty.add(f_idx)
+
+    # Find unmatched boxes
+    unmatched_golden = [i for i in range(len(golden_preds)) if i not in matched_golden]
+    unmatched_faulty = [i for i in range(len(faulty_preds)) if i not in matched_faulty]
+
+    return {
+        'matched_pairs': matched_pairs,
+        'unmatched_golden': unmatched_golden,
+        'unmatched_faulty': unmatched_faulty
+    }
+
+def classify_fault_outcome(golden_predictions, faulty_predictions, status="SUCCESS"):
+    """
+    Classify the outcome of a fault injection run by comparing golden vs faulty predictions.
+
+    Uses a composite approach to detect multiple types of Silent Data Corruption (SDC):
+    - SDC_M: Missed detections (golden boxes not found in faulty)
+    - SDC_P: Phantom detections (faulty boxes not found in golden)
+    - SDC_L: Location errors (matched boxes with poor IoU)
+    - SDC_C: Classification errors (matched boxes with different class)
+
+    Args:
+        golden_predictions (list): Predictions from golden (fault-free) run.
+                                    List of dicts with 'box_xyxyn', 'label_id', 'score'.
+        faulty_predictions (list or None): Predictions from faulty run.
+                                            None or empty if crashed/hung.
+        status (str): Run status - "SUCCESS", "CRASH", or "HANG"
+
+    Returns:
+        str: Classification result. Examples:
+             - "MASKED" if no detectable differences
+             - "SDC_M,SDC_L" if missed detections and location errors
+             - "CRASH" if application crashed
+             - "HANG" if application hung/timed out
+    """
+    # 1. Handle CRASH/HANG cases
+    if status == "CRASH":
+        return "CRASH"
+    if status == "HANG":
+        return "HANG"
+
+    # Handle None or empty faulty predictions (also treated as crash-like)
+    if faulty_predictions is None:
+        return "CRASH"
+
+    # 2. Check if fault was MASKED (no visible effect)
+    if predictions_are_masked(golden_predictions, faulty_predictions):
+        return "MASKED"
+
+    # 3. Match boxes between golden and faulty predictions
+    match_result = match_boxes(golden_predictions, faulty_predictions)
+
+    # 4. Detect different types of SDC
+    sdc_types = []
+
+    # SDC_M: Missed detections (golden boxes with no match in faulty)
+    if match_result['unmatched_golden']:
+        sdc_types.append("SDC_M")
+
+    # SDC_P: Phantom detections (faulty boxes with no match in golden)
+    if match_result['unmatched_faulty']:
+        sdc_types.append("SDC_P")
+
+    # SDC_L and SDC_C: Check matched pairs for location and classification errors
+    has_location_errors = False
+    has_classification_errors = False
+
+    for g_idx, f_idx, iou_val, same_class in match_result['matched_pairs']:
+        # SDC_L: Location error (matched but IoU below accuracy threshold)
+        if iou_val < IOU_THRESHOLD:
+            has_location_errors = True
+
+        # SDC_C: Classification error (matched by location but different class)
+        if not same_class:
+            has_classification_errors = True
+
+    if has_location_errors:
+        sdc_types.append("SDC_L")
+
+    if has_classification_errors:
+        sdc_types.append("SDC_C")
+
+    # 5. Return result
+    if sdc_types:
+        return ",".join(sdc_types)
+    else:
+        # Edge case: predictions differ but no specific SDC detected
+        # (e.g., only score differences within matched boxes)
+        return "MASKED"
