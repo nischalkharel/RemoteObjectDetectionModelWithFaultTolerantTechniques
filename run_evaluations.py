@@ -1,4 +1,3 @@
-import subprocess
 import json
 import os
 from pathlib import Path
@@ -7,6 +6,9 @@ import random # Needed for random selection
 
 # Import AP calculation function from compare_results.py
 from compare_results import calculate_ap_for_image
+
+# Import inference function from baseline_inference.py
+from baseline_inference import run_inference
 
 # --- Configuration ---
 # This script should be inside RemoteObjectDetectionModelWithFaultTolerantTechniques
@@ -101,60 +103,39 @@ for i in range(num_iterations):
              all_ap_scores.append(-1.0)  # Mark as error
              continue 
 
-    # --- Call the Worker Script ---
-    command = [
-        "python", 
-        str(worker_script_abs_path),
-        "--image", str(image_abs_path), 
-        "--model", str(model_abs_path)
-    ]
-    
+    # --- Call Inference Function Directly ---
     print(f"Processing {iteration_label}: {image_rel_path_str}...")
-    
+
     try:
-        process_result = subprocess.run(command, capture_output=True, text=True, check=True, encoding='utf-8') # Added encoding
-        worker_output_json = process_result.stdout #getting the outputs
-        
-        # --- Parse Worker Output ---
-        try:
-            worker_data = json.loads(worker_output_json)
-            
-            if worker_data.get("error"):
-                print(f"  Worker Error: {worker_data['error']}")
-                # Store placeholder results even on worker error
-                # Storing placeholders helps keep lists aligned for mAP calc if needed.
-                all_predictions_data.append({"image_path": image_rel_path_str, "predictions": []})
-                all_ground_truth_paths.append(str(label_abs_path))
-                all_inference_times.append(0) # Or mark as error?
-                all_ap_scores.append(-1.0)  # Mark as error
-                continue 
-                
-            # --- Store Results ---
-            predictions_list = worker_data.get("predictions", [])
-            all_predictions_data.append({
-                "image_path": image_rel_path_str,
-                "predictions": predictions_list
-            })
-            all_ground_truth_paths.append(str(label_abs_path))
-            all_inference_times.append(worker_data.get("inference_time_ms", 0))
+        # Call run_inference function directly instead of subprocess
+        worker_data = run_inference(str(image_abs_path), str(model_abs_path))
 
-            # --- Calculate AP for this image ---
-            ap_score = calculate_ap_for_image(predictions_list, str(label_abs_path))
-            all_ap_scores.append(ap_score)
-            if ap_score >= 0:
-                print(f"  AP: {ap_score:.4f}")
-
-        except json.JSONDecodeError:
-            print(f"  Error: Could not decode JSON from worker: {worker_output_json[:200]}...")
+        if worker_data.get("error"):
+            print(f"  Worker Error: {worker_data['error']}")
+            # Store placeholder results even on worker error
             all_predictions_data.append({"image_path": image_rel_path_str, "predictions": []})
             all_ground_truth_paths.append(str(label_abs_path))
             all_inference_times.append(0)
             all_ap_scores.append(-1.0)  # Mark as error
-            continue 
+            continue
 
-    except subprocess.CalledProcessError as e:
-        print(f"  Error running worker script for {image_rel_path_str}:")
-        # (Error printing code remains the same...)
+        # --- Store Results ---
+        predictions_list = worker_data.get("predictions", [])
+        all_predictions_data.append({
+            "image_path": image_rel_path_str,
+            "predictions": predictions_list
+        })
+        all_ground_truth_paths.append(str(label_abs_path))
+        all_inference_times.append(worker_data.get("inference_time_ms", 0))
+
+        # --- Calculate AP for this image ---
+        ap_score = calculate_ap_for_image(predictions_list, str(label_abs_path))
+        all_ap_scores.append(ap_score)
+        if ap_score >= 0:
+            print(f"  AP: {ap_score:.4f}")
+
+    except Exception as e:
+        print(f"  Error during inference for {image_rel_path_str}: {e}")
         all_predictions_data.append({"image_path": image_rel_path_str, "predictions": []})
         all_ground_truth_paths.append(str(label_abs_path))
         all_inference_times.append(0)

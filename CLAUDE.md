@@ -1,0 +1,1 @@
+- keep adding any new things being installed into requirements and also in the venv

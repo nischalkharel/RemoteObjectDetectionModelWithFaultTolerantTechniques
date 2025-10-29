@@ -1,0 +1,1224 @@
+{
+  "configuration": {
+    "worker_script": "baseline_inference.py",
+    "model_path": "Plane_Ship_Detection/Plane_Ship_Model.pt",
+    "image_list": "validation_dataset_list.txt",
+    "selection_mode": "sequential",
+    "iou_threshold": 0.8
+  },
+  "results": {
+    "total_iterations_attempted": 201,
+    "total_images_processed": 201,
+    "total_valid_ap_calculations": 201,
+    "average_inference_time_ms": 189.01,
+    "mAP": 0.6634
+  },
+  "per_image_results": [
+    {
+      "image_path": "Images/Validation_Images/P0019.png",
+      "ap_score": 0.506,
+      "inference_time_ms": 337.48,
+      "num_detections": 16
+    },
+    {
+      "image_path": "Images/Validation_Images/P0027.png",
+      "ap_score": 0.5714,
+      "inference_time_ms": 155.29,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P0053.png",
+      "ap_score": 0.7137,
+      "inference_time_ms": 159.75,
+      "num_detections": 64
+    },
+    {
+      "image_path": "Images/Validation_Images/P0060.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 191.32,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P0110.png",
+      "ap_score": 0.6667,
+      "inference_time_ms": 192.36,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P0128.png",
+      "ap_score": 0.6538,
+      "inference_time_ms": 160.54,
+      "num_detections": 107
+    },
+    {
+      "image_path": "Images/Validation_Images/P0161.png",
+      "ap_score": 0.7692,
+      "inference_time_ms": 206.29,
+      "num_detections": 19
+    },
+    {
+      "image_path": "Images/Validation_Images/P0168.png",
+      "ap_score": 0.8159,
+      "inference_time_ms": 168.63,
+      "num_detections": 34
+    },
+    {
+      "image_path": "Images/Validation_Images/P0170.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 110.2,
+      "num_detections": 27
+    },
+    {
+      "image_path": "Images/Validation_Images/P0173.png",
+      "ap_score": 0.7685,
+      "inference_time_ms": 119.58,
+      "num_detections": 8
+    },
+    {
+      "image_path": "Images/Validation_Images/P0179.png",
+      "ap_score": 0.4618,
+      "inference_time_ms": 370.21,
+      "num_detections": 90
+    },
+    {
+      "image_path": "Images/Validation_Images/P0213.png",
+      "ap_score": 0.4014,
+      "inference_time_ms": 160.96,
+      "num_detections": 41
+    },
+    {
+      "image_path": "Images/Validation_Images/P0217.png",
+      "ap_score": 0.9013,
+      "inference_time_ms": 153.47,
+      "num_detections": 23
+    },
+    {
+      "image_path": "Images/Validation_Images/P0249.png",
+      "ap_score": 0.4705,
+      "inference_time_ms": 111.39,
+      "num_detections": 27
+    },
+    {
+      "image_path": "Images/Validation_Images/P0257.png",
+      "ap_score": 0.4844,
+      "inference_time_ms": 121.63,
+      "num_detections": 32
+    },
+    {
+      "image_path": "Images/Validation_Images/P0259.png",
+      "ap_score": 0.0597,
+      "inference_time_ms": 197.59,
+      "num_detections": 23
+    },
+    {
+      "image_path": "Images/Validation_Images/P0261.png",
+      "ap_score": 0.0,
+      "inference_time_ms": 142.8,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P0262.png",
+      "ap_score": 0.6832,
+      "inference_time_ms": 221.33,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0300.png",
+      "ap_score": 0.5833,
+      "inference_time_ms": 99.53,
+      "num_detections": 7
+    },
+    {
+      "image_path": "Images/Validation_Images/P0309.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 82.14,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P0331.png",
+      "ap_score": 0.7875,
+      "inference_time_ms": 201.75,
+      "num_detections": 9
+    },
+    {
+      "image_path": "Images/Validation_Images/P0336.png",
+      "ap_score": 0.6019,
+      "inference_time_ms": 135.16,
+      "num_detections": 7
+    },
+    {
+      "image_path": "Images/Validation_Images/P0342.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 137.95,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P0347.png",
+      "ap_score": 0.75,
+      "inference_time_ms": 144.38,
+      "num_detections": 5
+    },
+    {
+      "image_path": "Images/Validation_Images/P0348.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 78.01,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P0353.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 140.58,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P0411.png",
+      "ap_score": 0.625,
+      "inference_time_ms": 115.86,
+      "num_detections": 27
+    },
+    {
+      "image_path": "Images/Validation_Images/P0414.png",
+      "ap_score": 0.875,
+      "inference_time_ms": 111.43,
+      "num_detections": 7
+    },
+    {
+      "image_path": "Images/Validation_Images/P0420.png",
+      "ap_score": 0.8167,
+      "inference_time_ms": 118.61,
+      "num_detections": 11
+    },
+    {
+      "image_path": "Images/Validation_Images/P0432.png",
+      "ap_score": 0.5833,
+      "inference_time_ms": 125.72,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P0476.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 128.23,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P0518.png",
+      "ap_score": 0.625,
+      "inference_time_ms": 120.97,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P0524.png",
+      "ap_score": 0.7024,
+      "inference_time_ms": 132.28,
+      "num_detections": 7
+    },
+    {
+      "image_path": "Images/Validation_Images/P0525.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 82.25,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P0526.png",
+      "ap_score": 0.8,
+      "inference_time_ms": 152.0,
+      "num_detections": 6
+    },
+    {
+      "image_path": "Images/Validation_Images/P0543.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 118.96,
+      "num_detections": 1
+    },
+    {
+      "image_path": "Images/Validation_Images/P0547.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 124.75,
+      "num_detections": 1
+    },
+    {
+      "image_path": "Images/Validation_Images/P0550.png",
+      "ap_score": 0.9375,
+      "inference_time_ms": 98.39,
+      "num_detections": 8
+    },
+    {
+      "image_path": "Images/Validation_Images/P0551.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 151.19,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P0557.png",
+      "ap_score": 0.6616,
+      "inference_time_ms": 109.11,
+      "num_detections": 11
+    },
+    {
+      "image_path": "Images/Validation_Images/P0558.png",
+      "ap_score": 0.75,
+      "inference_time_ms": 94.66,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P0564.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 109.79,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P0579.png",
+      "ap_score": 0.7778,
+      "inference_time_ms": 100.11,
+      "num_detections": 4
+    },
+    {
+      "image_path": "Images/Validation_Images/P0583.png",
+      "ap_score": 0.875,
+      "inference_time_ms": 87.26,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P0604.png",
+      "ap_score": 0.875,
+      "inference_time_ms": 106.87,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P0613.png",
+      "ap_score": 0.625,
+      "inference_time_ms": 105.67,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P0622.png",
+      "ap_score": 0.25,
+      "inference_time_ms": 109.38,
+      "num_detections": 4
+    },
+    {
+      "image_path": "Images/Validation_Images/P0683.png",
+      "ap_score": 0.6128,
+      "inference_time_ms": 174.71,
+      "num_detections": 14
+    },
+    {
+      "image_path": "Images/Validation_Images/P0696.png",
+      "ap_score": 0.7255,
+      "inference_time_ms": 146.03,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0704.png",
+      "ap_score": 0.8832,
+      "inference_time_ms": 146.04,
+      "num_detections": 259
+    },
+    {
+      "image_path": "Images/Validation_Images/P0706.png",
+      "ap_score": 0.7576,
+      "inference_time_ms": 154.26,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0715.png",
+      "ap_score": 0.7769,
+      "inference_time_ms": 133.73,
+      "num_detections": 29
+    },
+    {
+      "image_path": "Images/Validation_Images/P0725.png",
+      "ap_score": 0.9716,
+      "inference_time_ms": 117.6,
+      "num_detections": 24
+    },
+    {
+      "image_path": "Images/Validation_Images/P0729.png",
+      "ap_score": 0.8993,
+      "inference_time_ms": 84.84,
+      "num_detections": 23
+    },
+    {
+      "image_path": "Images/Validation_Images/P0749.png",
+      "ap_score": 0.8246,
+      "inference_time_ms": 97.21,
+      "num_detections": 32
+    },
+    {
+      "image_path": "Images/Validation_Images/P0761.png",
+      "ap_score": 0.879,
+      "inference_time_ms": 137.75,
+      "num_detections": 61
+    },
+    {
+      "image_path": "Images/Validation_Images/P0763.png",
+      "ap_score": 0.9225,
+      "inference_time_ms": 108.94,
+      "num_detections": 42
+    },
+    {
+      "image_path": "Images/Validation_Images/P0764.png",
+      "ap_score": 0.8927,
+      "inference_time_ms": 111.57,
+      "num_detections": 44
+    },
+    {
+      "image_path": "Images/Validation_Images/P0789.png",
+      "ap_score": 0.8835,
+      "inference_time_ms": 111.39,
+      "num_detections": 233
+    },
+    {
+      "image_path": "Images/Validation_Images/P0795.png",
+      "ap_score": 0.8685,
+      "inference_time_ms": 148.19,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0796.png",
+      "ap_score": 0.7071,
+      "inference_time_ms": 79.93,
+      "num_detections": 236
+    },
+    {
+      "image_path": "Images/Validation_Images/P0799.png",
+      "ap_score": 0.7825,
+      "inference_time_ms": 138.39,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0801.png",
+      "ap_score": 0.7597,
+      "inference_time_ms": 152.21,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0837.png",
+      "ap_score": 0.9106,
+      "inference_time_ms": 151.79,
+      "num_detections": 245
+    },
+    {
+      "image_path": "Images/Validation_Images/P0838.png",
+      "ap_score": 0.6418,
+      "inference_time_ms": 160.82,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0839.png",
+      "ap_score": 0.7839,
+      "inference_time_ms": 87.66,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0841.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 193.82,
+      "num_detections": 24
+    },
+    {
+      "image_path": "Images/Validation_Images/P0858.png",
+      "ap_score": 0.7182,
+      "inference_time_ms": 147.77,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0864.png",
+      "ap_score": 0.6347,
+      "inference_time_ms": 173.0,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0887.png",
+      "ap_score": 0.9504,
+      "inference_time_ms": 183.45,
+      "num_detections": 230
+    },
+    {
+      "image_path": "Images/Validation_Images/P0897.png",
+      "ap_score": 0.5357,
+      "inference_time_ms": 229.33,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P0910.png",
+      "ap_score": 0.655,
+      "inference_time_ms": 172.89,
+      "num_detections": 82
+    },
+    {
+      "image_path": "Images/Validation_Images/P0929.png",
+      "ap_score": 0.5125,
+      "inference_time_ms": 78.95,
+      "num_detections": 9
+    },
+    {
+      "image_path": "Images/Validation_Images/P0932.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 145.69,
+      "num_detections": 4
+    },
+    {
+      "image_path": "Images/Validation_Images/P0936.png",
+      "ap_score": 0.601,
+      "inference_time_ms": 120.41,
+      "num_detections": 18
+    },
+    {
+      "image_path": "Images/Validation_Images/P0945.png",
+      "ap_score": 0.7533,
+      "inference_time_ms": 151.37,
+      "num_detections": 42
+    },
+    {
+      "image_path": "Images/Validation_Images/P0949.png",
+      "ap_score": 0.7607,
+      "inference_time_ms": 90.01,
+      "num_detections": 11
+    },
+    {
+      "image_path": "Images/Validation_Images/P0953.png",
+      "ap_score": 0.5208,
+      "inference_time_ms": 110.36,
+      "num_detections": 6
+    },
+    {
+      "image_path": "Images/Validation_Images/P0961.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 127.4,
+      "num_detections": 33
+    },
+    {
+      "image_path": "Images/Validation_Images/P0964.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 104.08,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P0970.png",
+      "ap_score": 0.8,
+      "inference_time_ms": 117.43,
+      "num_detections": 6
+    },
+    {
+      "image_path": "Images/Validation_Images/P0974.png",
+      "ap_score": 0.625,
+      "inference_time_ms": 107.82,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P0977.png",
+      "ap_score": 0.8312,
+      "inference_time_ms": 188.65,
+      "num_detections": 8
+    },
+    {
+      "image_path": "Images/Validation_Images/P0989.png",
+      "ap_score": 0.8208,
+      "inference_time_ms": 137.35,
+      "num_detections": 9
+    },
+    {
+      "image_path": "Images/Validation_Images/P0990.png",
+      "ap_score": 0.6714,
+      "inference_time_ms": 179.5,
+      "num_detections": 24
+    },
+    {
+      "image_path": "Images/Validation_Images/P0998.png",
+      "ap_score": 0.5125,
+      "inference_time_ms": 144.81,
+      "num_detections": 5
+    },
+    {
+      "image_path": "Images/Validation_Images/P1007.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 176.94,
+      "num_detections": 9
+    },
+    {
+      "image_path": "Images/Validation_Images/P1009.png",
+      "ap_score": 0.5004,
+      "inference_time_ms": 133.77,
+      "num_detections": 76
+    },
+    {
+      "image_path": "Images/Validation_Images/P1014.png",
+      "ap_score": 0.5822,
+      "inference_time_ms": 173.72,
+      "num_detections": 87
+    },
+    {
+      "image_path": "Images/Validation_Images/P1021.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 113.84,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P1022.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 106.64,
+      "num_detections": 1
+    },
+    {
+      "image_path": "Images/Validation_Images/P1023.png",
+      "ap_score": 0.6,
+      "inference_time_ms": 109.95,
+      "num_detections": 15
+    },
+    {
+      "image_path": "Images/Validation_Images/P1029.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 145.22,
+      "num_detections": 9
+    },
+    {
+      "image_path": "Images/Validation_Images/P1030.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 130.55,
+      "num_detections": 12
+    },
+    {
+      "image_path": "Images/Validation_Images/P1065.png",
+      "ap_score": 0.5298,
+      "inference_time_ms": 229.0,
+      "num_detections": 20
+    },
+    {
+      "image_path": "Images/Validation_Images/P1066.png",
+      "ap_score": 0.6821,
+      "inference_time_ms": 146.79,
+      "num_detections": 18
+    },
+    {
+      "image_path": "Images/Validation_Images/P1075.png",
+      "ap_score": 0.6077,
+      "inference_time_ms": 185.28,
+      "num_detections": 288
+    },
+    {
+      "image_path": "Images/Validation_Images/P1088.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 155.71,
+      "num_detections": 23
+    },
+    {
+      "image_path": "Images/Validation_Images/P1090.png",
+      "ap_score": 0.8654,
+      "inference_time_ms": 137.08,
+      "num_detections": 155
+    },
+    {
+      "image_path": "Images/Validation_Images/P1095.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 207.75,
+      "num_detections": 11
+    },
+    {
+      "image_path": "Images/Validation_Images/P1103.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 123.13,
+      "num_detections": 25
+    },
+    {
+      "image_path": "Images/Validation_Images/P1128.png",
+      "ap_score": 0.1667,
+      "inference_time_ms": 136.9,
+      "num_detections": 4
+    },
+    {
+      "image_path": "Images/Validation_Images/P1133.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 170.44,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P1134.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 155.68,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P1137.png",
+      "ap_score": 0.0,
+      "inference_time_ms": 86.74,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P1138.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 110.09,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P1143.png",
+      "ap_score": 0.9283,
+      "inference_time_ms": 404.85,
+      "num_detections": 17
+    },
+    {
+      "image_path": "Images/Validation_Images/P1147.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 366.19,
+      "num_detections": 11
+    },
+    {
+      "image_path": "Images/Validation_Images/P1149.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 245.06,
+      "num_detections": 1
+    },
+    {
+      "image_path": "Images/Validation_Images/P1154.png",
+      "ap_score": 0.9762,
+      "inference_time_ms": 273.41,
+      "num_detections": 22
+    },
+    {
+      "image_path": "Images/Validation_Images/P1156.png",
+      "ap_score": 0.8237,
+      "inference_time_ms": 215.43,
+      "num_detections": 13
+    },
+    {
+      "image_path": "Images/Validation_Images/P1179.png",
+      "ap_score": 0.5578,
+      "inference_time_ms": 613.37,
+      "num_detections": 86
+    },
+    {
+      "image_path": "Images/Validation_Images/P1184.png",
+      "ap_score": 0.519,
+      "inference_time_ms": 239.82,
+      "num_detections": 11
+    },
+    {
+      "image_path": "Images/Validation_Images/P1212.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 213.63,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P1213.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 226.36,
+      "num_detections": 1
+    },
+    {
+      "image_path": "Images/Validation_Images/P1219.png",
+      "ap_score": 0.5076,
+      "inference_time_ms": 208.97,
+      "num_detections": 8
+    },
+    {
+      "image_path": "Images/Validation_Images/P1225.png",
+      "ap_score": 0.5976,
+      "inference_time_ms": 229.35,
+      "num_detections": 9
+    },
+    {
+      "image_path": "Images/Validation_Images/P1230.png",
+      "ap_score": 0.0,
+      "inference_time_ms": 234.73,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P1234.png",
+      "ap_score": 0.5667,
+      "inference_time_ms": 222.16,
+      "num_detections": 26
+    },
+    {
+      "image_path": "Images/Validation_Images/P1242.png",
+      "ap_score": 0.5476,
+      "inference_time_ms": 232.72,
+      "num_detections": 14
+    },
+    {
+      "image_path": "Images/Validation_Images/P1246.png",
+      "ap_score": 0.625,
+      "inference_time_ms": 220.16,
+      "num_detections": 10
+    },
+    {
+      "image_path": "Images/Validation_Images/P1257.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 225.06,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P1266.png",
+      "ap_score": 0.6964,
+      "inference_time_ms": 201.76,
+      "num_detections": 4
+    },
+    {
+      "image_path": "Images/Validation_Images/P1268.png",
+      "ap_score": 0.55,
+      "inference_time_ms": 200.35,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P1273.png",
+      "ap_score": 0.0952,
+      "inference_time_ms": 194.93,
+      "num_detections": 6
+    },
+    {
+      "image_path": "Images/Validation_Images/P1275.png",
+      "ap_score": 0.5623,
+      "inference_time_ms": 257.94,
+      "num_detections": 32
+    },
+    {
+      "image_path": "Images/Validation_Images/P1278.png",
+      "ap_score": 0.55,
+      "inference_time_ms": 214.75,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P1283.png",
+      "ap_score": 0.625,
+      "inference_time_ms": 216.29,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P1314.png",
+      "ap_score": 0.5462,
+      "inference_time_ms": 222.7,
+      "num_detections": 10
+    },
+    {
+      "image_path": "Images/Validation_Images/P1315.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 235.65,
+      "num_detections": 5
+    },
+    {
+      "image_path": "Images/Validation_Images/P1332.png",
+      "ap_score": 0.5196,
+      "inference_time_ms": 190.22,
+      "num_detections": 18
+    },
+    {
+      "image_path": "Images/Validation_Images/P1342.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 231.27,
+      "num_detections": 1
+    },
+    {
+      "image_path": "Images/Validation_Images/P1356.png",
+      "ap_score": 0.5409,
+      "inference_time_ms": 224.03,
+      "num_detections": 12
+    },
+    {
+      "image_path": "Images/Validation_Images/P1373.png",
+      "ap_score": 0.3312,
+      "inference_time_ms": 220.69,
+      "num_detections": 42
+    },
+    {
+      "image_path": "Images/Validation_Images/P1376.png",
+      "ap_score": 0.9577,
+      "inference_time_ms": 365.88,
+      "num_detections": 21
+    },
+    {
+      "image_path": "Images/Validation_Images/P1380.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 315.17,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P1384.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 527.16,
+      "num_detections": 5
+    },
+    {
+      "image_path": "Images/Validation_Images/P1386.png",
+      "ap_score": 0.6823,
+      "inference_time_ms": 226.74,
+      "num_detections": 225
+    },
+    {
+      "image_path": "Images/Validation_Images/P1390.png",
+      "ap_score": 0.9258,
+      "inference_time_ms": 290.8,
+      "num_detections": 282
+    },
+    {
+      "image_path": "Images/Validation_Images/P1397.png",
+      "ap_score": 0.7246,
+      "inference_time_ms": 386.62,
+      "num_detections": 300
+    },
+    {
+      "image_path": "Images/Validation_Images/P1398.png",
+      "ap_score": 0.9437,
+      "inference_time_ms": 379.81,
+      "num_detections": 105
+    },
+    {
+      "image_path": "Images/Validation_Images/P1429.png",
+      "ap_score": 0.6914,
+      "inference_time_ms": 195.98,
+      "num_detections": 35
+    },
+    {
+      "image_path": "Images/Validation_Images/P1474.png",
+      "ap_score": 0.5809,
+      "inference_time_ms": 313.55,
+      "num_detections": 24
+    },
+    {
+      "image_path": "Images/Validation_Images/P1483.png",
+      "ap_score": 0.7333,
+      "inference_time_ms": 154.85,
+      "num_detections": 7
+    },
+    {
+      "image_path": "Images/Validation_Images/P1492.png",
+      "ap_score": 0.9,
+      "inference_time_ms": 135.3,
+      "num_detections": 5
+    },
+    {
+      "image_path": "Images/Validation_Images/P1508.png",
+      "ap_score": 0.75,
+      "inference_time_ms": 150.78,
+      "num_detections": 1
+    },
+    {
+      "image_path": "Images/Validation_Images/P1512.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 153.32,
+      "num_detections": 9
+    },
+    {
+      "image_path": "Images/Validation_Images/P1513.png",
+      "ap_score": 0.9737,
+      "inference_time_ms": 206.55,
+      "num_detections": 18
+    },
+    {
+      "image_path": "Images/Validation_Images/P1529.png",
+      "ap_score": 0.6867,
+      "inference_time_ms": 214.49,
+      "num_detections": 19
+    },
+    {
+      "image_path": "Images/Validation_Images/P1541.png",
+      "ap_score": 0.0,
+      "inference_time_ms": 230.53,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P1566.png",
+      "ap_score": 0.5625,
+      "inference_time_ms": 212.76,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P1583.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 228.61,
+      "num_detections": 6
+    },
+    {
+      "image_path": "Images/Validation_Images/P1598.png",
+      "ap_score": 0.6821,
+      "inference_time_ms": 232.18,
+      "num_detections": 12
+    },
+    {
+      "image_path": "Images/Validation_Images/P1601.png",
+      "ap_score": 0.5238,
+      "inference_time_ms": 215.41,
+      "num_detections": 1
+    },
+    {
+      "image_path": "Images/Validation_Images/P1604.png",
+      "ap_score": 0.5409,
+      "inference_time_ms": 211.25,
+      "num_detections": 11
+    },
+    {
+      "image_path": "Images/Validation_Images/P1610.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 213.93,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P1623.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 231.03,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P1672.png",
+      "ap_score": 0.0556,
+      "inference_time_ms": 200.25,
+      "num_detections": 5
+    },
+    {
+      "image_path": "Images/Validation_Images/P1738.png",
+      "ap_score": 0.1058,
+      "inference_time_ms": 219.21,
+      "num_detections": 55
+    },
+    {
+      "image_path": "Images/Validation_Images/P1742.png",
+      "ap_score": 0.6389,
+      "inference_time_ms": 226.69,
+      "num_detections": 3
+    },
+    {
+      "image_path": "Images/Validation_Images/P1770.png",
+      "ap_score": 0.5625,
+      "inference_time_ms": 211.31,
+      "num_detections": 1
+    },
+    {
+      "image_path": "Images/Validation_Images/P1786.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 252.74,
+      "num_detections": 6
+    },
+    {
+      "image_path": "Images/Validation_Images/P1809.png",
+      "ap_score": 0.7345,
+      "inference_time_ms": 655.41,
+      "num_detections": 29
+    },
+    {
+      "image_path": "Images/Validation_Images/P1854.png",
+      "ap_score": 0.9305,
+      "inference_time_ms": 745.95,
+      "num_detections": 83
+    },
+    {
+      "image_path": "Images/Validation_Images/P1860.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 149.82,
+      "num_detections": 5
+    },
+    {
+      "image_path": "Images/Validation_Images/P2059.png",
+      "ap_score": 0.7221,
+      "inference_time_ms": 111.02,
+      "num_detections": 31
+    },
+    {
+      "image_path": "Images/Validation_Images/P2181.png",
+      "ap_score": 0.75,
+      "inference_time_ms": 189.54,
+      "num_detections": 2
+    },
+    {
+      "image_path": "Images/Validation_Images/P2214.png",
+      "ap_score": 0.9871,
+      "inference_time_ms": 119.05,
+      "num_detections": 52
+    },
+    {
+      "image_path": "Images/Validation_Images/P2215.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 120.86,
+      "num_detections": 25
+    },
+    {
+      "image_path": "Images/Validation_Images/P2218.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 123.42,
+      "num_detections": 12
+    },
+    {
+      "image_path": "Images/Validation_Images/P2220.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 114.29,
+      "num_detections": 7
+    },
+    {
+      "image_path": "Images/Validation_Images/P2230.png",
+      "ap_score": 0.9629,
+      "inference_time_ms": 106.27,
+      "num_detections": 17
+    },
+    {
+      "image_path": "Images/Validation_Images/P2231.png",
+      "ap_score": 0.9347,
+      "inference_time_ms": 143.28,
+      "num_detections": 36
+    },
+    {
+      "image_path": "Images/Validation_Images/P2236.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 115.32,
+      "num_detections": 23
+    },
+    {
+      "image_path": "Images/Validation_Images/P2239.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 91.73,
+      "num_detections": 10
+    },
+    {
+      "image_path": "Images/Validation_Images/P2242.png",
+      "ap_score": 0.7966,
+      "inference_time_ms": 112.54,
+      "num_detections": 181
+    },
+    {
+      "image_path": "Images/Validation_Images/P2256.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 135.12,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P2271.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 312.79,
+      "num_detections": 5
+    },
+    {
+      "image_path": "Images/Validation_Images/P2285.png",
+      "ap_score": 0.7141,
+      "inference_time_ms": 279.49,
+      "num_detections": 104
+    },
+    {
+      "image_path": "Images/Validation_Images/P2286.png",
+      "ap_score": 0.5217,
+      "inference_time_ms": 159.36,
+      "num_detections": 70
+    },
+    {
+      "image_path": "Images/Validation_Images/P2294.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 115.22,
+      "num_detections": 4
+    },
+    {
+      "image_path": "Images/Validation_Images/P2310.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 110.32,
+      "num_detections": 9
+    },
+    {
+      "image_path": "Images/Validation_Images/P2322.png",
+      "ap_score": 1.0,
+      "inference_time_ms": 106.19,
+      "num_detections": 6
+    },
+    {
+      "image_path": "Images/Validation_Images/P2330.png",
+      "ap_score": 0.0927,
+      "inference_time_ms": 252.06,
+      "num_detections": 65
+    },
+    {
+      "image_path": "Images/Validation_Images/P2331.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 176.75,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P2429.png",
+      "ap_score": 0.6,
+      "inference_time_ms": 177.22,
+      "num_detections": 12
+    },
+    {
+      "image_path": "Images/Validation_Images/P2645.png",
+      "ap_score": 0.7026,
+      "inference_time_ms": 286.27,
+      "num_detections": 18
+    },
+    {
+      "image_path": "Images/Validation_Images/P2678.png",
+      "ap_score": 0.7395,
+      "inference_time_ms": 192.8,
+      "num_detections": 77
+    },
+    {
+      "image_path": "Images/Validation_Images/P2689.png",
+      "ap_score": 0.634,
+      "inference_time_ms": 313.83,
+      "num_detections": 51
+    },
+    {
+      "image_path": "Images/Validation_Images/P2701.png",
+      "ap_score": 0.6898,
+      "inference_time_ms": 216.98,
+      "num_detections": 12
+    },
+    {
+      "image_path": "Images/Validation_Images/P2709.png",
+      "ap_score": 0.8167,
+      "inference_time_ms": 175.22,
+      "num_detections": 8
+    },
+    {
+      "image_path": "Images/Validation_Images/P2726.png",
+      "ap_score": 0.6324,
+      "inference_time_ms": 201.56,
+      "num_detections": 273
+    },
+    {
+      "image_path": "Images/Validation_Images/P2733.png",
+      "ap_score": 0.142,
+      "inference_time_ms": 207.39,
+      "num_detections": 21
+    },
+    {
+      "image_path": "Images/Validation_Images/P2758.png",
+      "ap_score": 0.6043,
+      "inference_time_ms": 392.08,
+      "num_detections": 29
+    },
+    {
+      "image_path": "Images/Validation_Images/P2766.png",
+      "ap_score": 0.5,
+      "inference_time_ms": 444.65,
+      "num_detections": 0
+    },
+    {
+      "image_path": "Images/Validation_Images/P2771.png",
+      "ap_score": 0.5447,
+      "inference_time_ms": 144.29,
+      "num_detections": 43
+    },
+    {
+      "image_path": "Images/Validation_Images/P2778.png",
+      "ap_score": 0.6,
+      "inference_time_ms": 204.97,
+      "num_detections": 16
+    },
+    {
+      "image_path": "Images/Validation_Images/P2789.png",
+      "ap_score": 0.6528,
+      "inference_time_ms": 357.58,
+      "num_detections": 50
+    },
+    {
+      "image_path": "Images/Validation_Images/P2791.png",
+      "ap_score": 0.6617,
+      "inference_time_ms": 422.33,
+      "num_detections": 25
+    },
+    {
+      "image_path": "Images/Validation_Images/P2794.png",
+      "ap_score": 0.6916,
+      "inference_time_ms": 358.42,
+      "num_detections": 59
+    },
+    {
+      "image_path": "Images/Validation_Images/P2802.png",
+      "ap_score": 0.7544,
+      "inference_time_ms": 479.17,
+      "num_detections": 30
+    }
+  ]
+}
