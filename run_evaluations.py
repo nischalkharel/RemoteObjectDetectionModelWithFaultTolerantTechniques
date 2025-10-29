@@ -10,17 +10,59 @@ from compare_results import calculate_ap_for_image
 # Import inference function from baseline_inference.py
 from baseline_inference import run_inference
 
+# --- Helper Functions ---
+def xyxyn_to_yolo_format(box_xyxyn):
+    """
+    Convert normalized xyxy format to YOLO format (xc, yc, w, h) normalized.
+
+    Args:
+        box_xyxyn (list): [x1, y1, x2, y2] normalized coordinates
+
+    Returns:
+        list: [xc, yc, w, h] normalized coordinates
+    """
+    x1, y1, x2, y2 = box_xyxyn
+    w = x2 - x1
+    h = y2 - y1
+    xc = x1 + w / 2
+    yc = y1 + h / 2
+    return [xc, yc, w, h]
+
+def save_predictions_as_yolo(predictions_list, output_path):
+    """
+    Save predictions in YOLO .txt format (same as ground truth format).
+
+    Args:
+        predictions_list (list): List of predictions with 'box_xyxyn', 'label_id', 'score'
+        output_path (Path): Path to save the .txt file
+    """
+    try:
+        with open(output_path, 'w') as f:
+            for pred in predictions_list:
+                # Convert xyxyn to YOLO format
+                xc, yc, w, h = xyxyn_to_yolo_format(pred['box_xyxyn'])
+                class_id = pred['label_id']
+                # Write in YOLO format: class_id xc yc w h
+                f.write(f"{class_id} {xc:.6f} {yc:.6f} {w:.6f} {h:.6f}\n")
+    except Exception as e:
+        print(f"  Warning: Could not save golden predictions to {output_path}: {e}")
+
 # --- Configuration ---
 # This script should be inside RemoteObjectDetectionModelWithFaultTolerantTechniques
-BASE_DIR = Path.cwd() 
-WORKER_SCRIPT_NAME = "baseline_inference.py" 
+BASE_DIR = Path.cwd()
+WORKER_SCRIPT_NAME = "baseline_inference.py"
 MODEL_RELATIVE_PATH = Path("Plane_Ship_Detection/Plane_Ship_Model.pt")
 IMAGE_LIST_RELATIVE_PATH = Path("validation_dataset_list.txt")
-OUTPUT_FILE_NAME = "baseline_nofault.json"
+
+# Output configuration
+EXPERIMENT_NAME = "baseline_nofault"  # Name of experiment folder
+OUTPUT_FILE_NAME = "baseline_nofault.json"  # Name of results JSON file
+GOLDEN_PREDICTIONS_FOLDER = "golden_predictions"  # Folder to store golden run predictions
+
 # <<< --- Image Selection Mode --- >>>
 # Set to "sequential" for standard mAP evaluation (process each image once)
 # Set to "random" to randomly sample images (like the fault injection campaign)
-SELECTION_MODE = "sequential" 
+SELECTION_MODE = "sequential"
 # If random, how many total runs (can be more than the number of images)
 NUM_RANDOM_RUNS = 10000
 
@@ -28,11 +70,17 @@ NUM_RANDOM_RUNS = 10000
 worker_script_abs_path = BASE_DIR / WORKER_SCRIPT_NAME
 model_abs_path = BASE_DIR / MODEL_RELATIVE_PATH
 image_list_abs_path = BASE_DIR / IMAGE_LIST_RELATIVE_PATH
-output_dir = BASE_DIR / "output"
-output_file_path = output_dir / OUTPUT_FILE_NAME
 
-# Create output directory if it doesn't exist
-output_dir.mkdir(exist_ok=True)
+# Create nested output directory structure
+output_base_dir = BASE_DIR / "output"
+experiment_dir = output_base_dir / EXPERIMENT_NAME
+golden_predictions_dir = experiment_dir / GOLDEN_PREDICTIONS_FOLDER
+output_file_path = experiment_dir / OUTPUT_FILE_NAME
+
+# Create all directories
+output_base_dir.mkdir(exist_ok=True)
+experiment_dir.mkdir(exist_ok=True)
+golden_predictions_dir.mkdir(exist_ok=True)
 
 # --- Check if files/scripts exist ---
 # (Error checking code remains the same as before...)
@@ -133,6 +181,12 @@ for i in range(num_iterations):
         all_ap_scores.append(ap_score)
         if ap_score >= 0:
             print(f"  AP: {ap_score:.4f}")
+
+        # --- Save Golden Predictions ---
+        # Extract image filename without extension (e.g., "P0019" from "Images/Validation_Images/P0019.png")
+        image_filename_stem = Path(image_rel_path_str).stem  # Gets filename without extension
+        golden_pred_path = golden_predictions_dir / f"{image_filename_stem}.txt"
+        save_predictions_as_yolo(predictions_list, golden_pred_path)
 
     except Exception as e:
         print(f"  Error during inference for {image_rel_path_str}: {e}")
