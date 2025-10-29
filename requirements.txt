@@ -1,0 +1,18 @@
+# Core dependencies for Object Detection Project
+# Compatible with NVIDIA Orin Nano
+
+# PyTorch and Torchvision
+# Note: For Orin Nano, use NVIDIA's official PyTorch builds
+# See orin_nano_setup.txt for specific installation instructions
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Numeric and scientific computing
+numpy>=1.24.0
+
+# Optional but recommended for future enhancements
+# Uncomment if needed:
+# opencv-python>=4.8.0  # For image processing
+# pillow>=10.0.0  # For image loading
+# matplotlib>=3.7.0  # For visualization
+# tqdm>=4.65.0  # For progress bars

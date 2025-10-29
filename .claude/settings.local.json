@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git push:*)",
+      "Bash(git fsck:*)",
+      "Bash(git fetch:*)",
+      "Bash(rm:*)",
+      "Bash(git reset:*)",
+      "Bash(git commit:*)",
+      "Bash(git gc:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git restore:*)",
+      "Bash(python -m venv:*)",
+      "Bash(venv\\Scripts\\python.exe -m pip:*)",
+      "Bash(./venv/Scripts/python.exe -m pip install:*)",
+      "Bash(./venv/Scripts/python.exe:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

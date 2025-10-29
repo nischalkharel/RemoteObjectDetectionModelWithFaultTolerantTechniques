@@ -1,0 +1,176 @@
+================================================================================
+NVIDIA ORIN NANO DEPLOYMENT GUIDE
+Object Detection Project Setup
+================================================================================
+
+PREREQUISITES:
+--------------
+1. NVIDIA Orin Nano with JetPack 5.x or later installed
+2. Python 3.8 or later
+3. CUDA support enabled
+4. Internet connection for initial setup
+
+================================================================================
+SETUP INSTRUCTIONS FOR ORIN NANO:
+================================================================================
+
+STEP 1: Transfer Project to Orin Nano
+--------------------------------------
+Copy the entire project folder to your Orin Nano device:
+  scp -r RemoteObjectDetectionModelWithFaultTolerantTechniques/ user@orin-nano-ip:~/
+
+Or use a USB drive to transfer the folder.
+
+STEP 2: Install System Dependencies
+------------------------------------
+On the Orin Nano, run:
+  sudo apt-get update
+  sudo apt-get install python3-pip python3-venv
+  sudo apt-get install libopenblas-base libopenmpi-dev
+
+STEP 3: Create Virtual Environment
+-----------------------------------
+Navigate to project directory:
+  cd ~/RemoteObjectDetectionModelWithFaultTolerantTechniques
+
+Create virtual environment:
+  python3 -m venv venv
+
+Activate virtual environment:
+  source venv/bin/activate
+
+STEP 4: Install PyTorch for Jetson (CRITICAL!)
+-----------------------------------------------
+For NVIDIA Jetson devices (including Orin Nano), use NVIDIA's pre-built wheels:
+
+1. Check your JetPack version:
+   sudo apt-cache show nvidia-jetpack
+
+2. Install PyTorch (example for JetPack 5.x with Python 3.8):
+
+   # Download the wheel from NVIDIA
+   wget https://developer.download.nvidia.com/compute/redist/jp/v51/pytorch/torch-2.1.0a0+41361538.nv23.06-cp38-cp38-linux_aarch64.whl
+
+   # Install the wheel
+   pip3 install torch-2.1.0a0+41361538.nv23.06-cp38-cp38-linux_aarch64.whl
+
+   Note: Visit https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048
+   for the latest PyTorch wheels matching your JetPack version.
+
+3. Install torchvision (build from source or use NVIDIA wheel):
+   sudo apt-get install libjpeg-dev zlib1g-dev libpython3-dev libopenblas-dev libavcodec-dev libavformat-dev libswscale-dev
+   pip3 install torchvision
+
+STEP 5: Install Other Dependencies
+-----------------------------------
+Install remaining requirements:
+  pip3 install numpy
+
+For additional packages (if needed):
+  pip3 install opencv-python pillow matplotlib tqdm
+
+STEP 6: Verify Installation
+----------------------------
+Test PyTorch installation:
+  python3 -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
+
+Expected output:
+  PyTorch version: 2.x.x
+  CUDA available: True
+
+STEP 7: Run Your Application
+-----------------------------
+Ensure your model and data files are in place, then run:
+  python3 compare_results.py
+
+Or:
+  python3 main.py
+
+================================================================================
+ALTERNATIVE: Using Docker on Orin Nano
+================================================================================
+
+NVIDIA provides official Docker containers for Jetson devices:
+
+1. Pull the PyTorch container:
+   sudo docker pull nvcr.io/nvidia/l4t-pytorch:r35.2.1-pth2.0-py3
+
+2. Run container with your project mounted:
+   sudo docker run -it --runtime nvidia --network host \
+     -v ~/RemoteObjectDetectionModelWithFaultTolerantTechniques:/workspace \
+     nvcr.io/nvidia/l4t-pytorch:r35.2.1-pth2.0-py3
+
+3. Inside container, install additional dependencies:
+   pip3 install numpy
+
+4. Run your application from /workspace
+
+================================================================================
+PORTABLE ENVIRONMENT (Moving between devices)
+================================================================================
+
+To make the environment portable:
+
+1. On source machine, after installing all packages:
+   pip3 freeze > requirements_frozen.txt
+
+2. Copy the entire project folder including venv/ to target device
+   Note: This only works if both devices have the same architecture!
+   For Orin Nano (ARM), you must reinstall packages as per above steps.
+
+3. On Orin Nano, it's recommended to recreate the virtual environment
+   rather than copying it, due to architecture differences.
+
+================================================================================
+TROUBLESHOOTING:
+================================================================================
+
+Issue: "ImportError: cannot import name 'PILLOW_VERSION'"
+Solution: pip3 install --upgrade pillow
+
+Issue: PyTorch not detecting CUDA
+Solution:
+  - Verify CUDA installation: ls /usr/local/cuda
+  - Check CUDA_HOME: echo $CUDA_HOME
+  - Ensure you installed NVIDIA's PyTorch wheel for Jetson
+
+Issue: "OSError: libcublas.so.11: cannot open shared object file"
+Solution:
+  export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+  Add this to ~/.bashrc for persistence
+
+Issue: Out of memory errors
+Solution:
+  - Reduce batch size in your code
+  - Monitor memory: sudo tegrastats
+  - Increase swap: sudo systemctl enable nvzramconfig
+
+================================================================================
+USEFUL COMMANDS:
+================================================================================
+
+Check Jetson stats:
+  sudo tegrastats
+
+Monitor GPU usage:
+  sudo jetson_clocks --show
+
+Set maximum performance:
+  sudo jetson_clocks
+
+Check JetPack version:
+  sudo apt-cache show nvidia-jetpack
+
+Check CUDA version:
+  nvcc --version
+
+================================================================================
+ADDITIONAL RESOURCES:
+================================================================================
+
+- NVIDIA Jetson PyTorch: https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048
+- JetPack SDK: https://developer.nvidia.com/embedded/jetpack
+- Jetson Zoo (pre-built libraries): https://elinux.org/Jetson_Zoo
+- NVIDIA Jetson Docker containers: https://catalog.ngc.nvidia.com/containers?filters=&orderBy=scoreDESC&query=l4t
+
+================================================================================
