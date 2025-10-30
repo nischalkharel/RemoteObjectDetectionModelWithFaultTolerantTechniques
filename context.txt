@@ -19,7 +19,7 @@ A validation set of 201 images with corresponding ground truth labels (YOLO `.tx
 **Experimental Plan (3 Parts):**
 
 **Part 1: Baseline Performance & Overhead Measurement (No Faults)**
-* **Goal:** Measure mAP and average inference time for the baseline model and each technique implementation *without* injecting faults.
+* **Goal:** Measure mAP and average inference time for the baseline model and each technique implementation *without* injecting faults. This establishes baseline accuracy and technique overheads.
 * **Orchestrator Script:** `run_evaluation.py` (a Python script).
 * **Mode:** **Sequential**. It will iterate through the `validation_dataset_list.txt` once (201 images total).
 * **Process (per image):**
@@ -45,8 +45,17 @@ A validation set of 201 images with corresponding ground truth labels (YOLO `.tx
 
 **Modular Python Scripts:**
 1.  **`run_evaluation.py` (Main Python Script):** Orchestrates Part 1 (sequential mAP).
-2.  **`xxx_inference.py` (Worker Scripts):** One for each technique (e.g., `baseline_inference.py`, `tmr_inference.py`). **Technique logic is isolated here.** Called by both main orchestrators.
-3.  **`compare_results.py` (Comparison Library):**
+2.  **`run_campaign.sh` (Bash Script):** Orchestrates Parts 2 & 3 (random fault injection).
+3.  **`xxx_inference.py` (Worker Scripts):** One for each technique (e.g., `baseline_inference.py`, `tmr_inference.py`). **Technique logic is isolated here.** Called by both main orchestrators.
+    * **Example: `tmr_inference.py` (Triple Modular Redundancy)**
+        * **Logic:** This script will implement the "Run 3, Vote 1" principle.
+        * **Load:** It loads the *same* `Plane_Ship_Model.pt` file three times into memory as independent model objects (Model A, B, C).
+        * **Infer:** It runs inference on the *same* input image three times (once per model), producing three lists of predictions (Output A, B, C).
+        * **Vote:** It implements a "voter" algorithm. This voter clusters all predictions from A, B, and C based on class and high IoU. A detection is only considered "valid" and included in the final output if at least 2 out of the 3 models agree on it (i.e., the cluster has 2 or 3 votes).
+        * **Tolerance:** This process masks a single fault. If a fault corrupts `output_B` (e.g., creating a "phantom" box), the voter will see it only has 1 vote and discard it. If the fault *misses* a box, the other two models (A and C) will still agree, and the box will be correctly included.
+        * **Output:** It prints a single JSON output (the voted predictions and total time) in the *exact same format* as `baseline_inference.py`.
+
+4.  **`compare_results.py` (Comparison Library):**
     * Contains `calculate_ap_for_image()`: Called by `run_evaluation.py` for mAP calculation (compares predictions vs. ground truth).
     * Contains `classify_fault_outcome()`: Called by `run_campaign.sh` for reliability (compares golden vs. faulty predictions). **The detailed SDC (M, P, L, C) logic here still needs full implementation.**
 
