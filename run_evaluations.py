@@ -73,11 +73,12 @@ def load_golden_predictions(golden_pred_path):
         golden_pred_path (Path): Path to the golden predictions .txt file
 
     Returns:
-        list: List of predictions with 'box_xyxyn', 'label_id', 'score' (score=1.0 for golden)
-              Returns empty list if file doesn't exist or on error.
+        list or None: List of predictions with 'box_xyxyn', 'label_id', 'score' (score=1.0 for golden)
+                      Returns empty list [] if file exists but has no detections (valid case)
+                      Returns None if file doesn't exist or on error.
     """
     if not golden_pred_path.is_file():
-        return []
+        return None  # File not found - this is an error
 
     predictions = []
     try:
@@ -95,9 +96,9 @@ def load_golden_predictions(golden_pred_path):
                     })
     except Exception as e:
         print(f"  Warning: Could not load golden predictions from {golden_pred_path}: {e}")
-        return []
+        return None  # Read error - this is an error
 
-    return predictions
+    return predictions  # Valid result: could be [] (no detections) or list of predictions
 
 # --- Configuration ---
 # This script should be inside RemoteObjectDetectionModelWithFaultTolerantTechniques
@@ -270,12 +271,14 @@ for i in range(num_iterations):
             golden_pred_path = golden_source_dir / f"{image_filename_stem}.txt"
             golden_predictions = load_golden_predictions(golden_pred_path)
 
-            if not golden_predictions:
-                print(f"  Warning: No golden predictions found for {image_filename_stem}")
+            # Check if golden predictions file was missing or had read error (None)
+            if golden_predictions is None:
+                print(f"  Warning: No golden predictions file found for {image_filename_stem}")
                 all_results.append("ERROR")
                 continue
 
             # Classify fault outcome by comparing against golden predictions
+            # Note: golden_predictions can be [] (empty list) which is valid - means no objects detected
             fault_outcome = classify_fault_outcome(golden_predictions, predictions_list, status="SUCCESS")
             all_results.append(fault_outcome)
             print(f"  Fault Outcome: {fault_outcome}")
