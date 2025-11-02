@@ -1,6 +1,7 @@
 """
-Baseline Inference Worker Script
-Runs YOLOv8 inference on a single image and outputs predictions in JSON format.
+No Technique Inference Worker Script
+Runs YOLOv8 inference on a single image with no fault tolerance technique.
+Outputs predictions in JSON format.
 
 Expected to be called by run_evaluations.py with --image and --model arguments.
 Outputs JSON to stdout with predictions and inference time.
@@ -26,9 +27,9 @@ except ImportError as e:
     sys.exit(1)
 
 
-def run_inference(image_path, model_path):
+def run_notechnique_inference(image_path, model_path):
     """
-    Run YOLOv8 inference on a single image.
+    Run YOLOv8 inference on a single image with no fault tolerance technique.
 
     Args:
         image_path (str): Absolute path to the image file
@@ -55,7 +56,6 @@ def run_inference(image_path, model_path):
                 "predictions": [],
                 "inference_time_ms": 0
             }
-
         # Load model
         model = YOLO(str(model_path))
 
@@ -103,17 +103,17 @@ def run_inference(image_path, model_path):
 
 def main():
     """
-    Main entry point for the baseline inference worker.
+    Main entry point for the no-technique inference worker.
     Parses command-line arguments and runs inference.
     """
-    parser = argparse.ArgumentParser(description="YOLOv8 Baseline Inference Worker")
+    parser = argparse.ArgumentParser(description="YOLOv8 No-Technique Inference Worker")
     parser.add_argument("--image", type=str, required=True, help="Path to input image")
     parser.add_argument("--model", type=str, required=True, help="Path to YOLOv8 model (.pt file)")
 
     args = parser.parse_args()
 
     # Run inference
-    result = run_inference(args.image, args.model)
+    result = run_notechnique_inference(args.image, args.model)
 
     # Output JSON to stdout (captured by run_evaluations.py)
     print(json.dumps(result))

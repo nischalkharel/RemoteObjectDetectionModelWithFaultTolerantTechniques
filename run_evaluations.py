@@ -8,8 +8,8 @@ import random # Needed for random selection
 from compare_results import calculate_ap_for_image, classify_fault_outcome
 
 # Import inference function from inference
-from baseline_inference import run_inference
-from tmr_inference import run_tmr_inference as run_inference
+from notechnique_inference import run_notechnique_inference as run_inference
+# from tmr_inference import run_tmr_inference as run_inference
 
 # --- Helper Functions ---
 def xyxyn_to_yolo_format(box_xyxyn):
@@ -103,28 +103,25 @@ def load_golden_predictions(golden_pred_path):
 # --- Configuration ---
 # This script should be inside RemoteObjectDetectionModelWithFaultTolerantTechniques
 BASE_DIR = Path.cwd()
-#WORKER_SCRIPT_NAME = "baseline_inference.py"
-WORKER_SCRIPT_NAME = "tmr_inference.py"
+WORKER_SCRIPT_NAME = "notechnique_inference.py"  # Options: "notechnique_inference.py" or "tmr_inference.py"
 MODEL_RELATIVE_PATH = Path("Plane_Ship_Detection/Plane_Ship_Model.pt")
 IMAGE_LIST_RELATIVE_PATH = Path("validation_dataset_list.txt")
 
 # Run type configuration
-RUN_TYPE = "faultinjection"  # Options: "nofault", "faultinjection"
+RUN_TYPE = "nofault"  # Options: "nofault", "faultinjection"
 
 # Output configuration
-#EXPERIMENT_NAME = "baseline_nofault"  # Name of experiment folder
-EXPERIMENT_NAME = "tmr_fault"
-#OUTPUT_FILE_NAME = "baseline_nofault.json"  # Name of results JSON file
-OUTPUT_FILE_NAME = "tmr_fault.json"
+EXPERIMENT_NAME = "notechnique_nofault"  # Name of experiment folder
+OUTPUT_FILE_NAME = "notechnique_nofault.json"  # Name of results JSON file
 GOLDEN_PREDICTIONS_FOLDER = "golden_predictions"  # Folder to store golden run predictions
 
 # Fault injection configuration (only used when RUN_TYPE = "faultinjection")
-GOLDEN_SOURCE_EXPERIMENT = "tmr_nofault"  # Which experiment's golden predictions to compare against
+GOLDEN_SOURCE_EXPERIMENT = "notechnique_nofault"  # Which experiment's golden predictions to compare against
 
 # <<< --- Image Selection Mode --- >>>
 # Set to "sequential" for standard mAP evaluation (process each image once)
 # Set to "random" to randomly sample images (like the fault injection campaign)
-SELECTION_MODE = "random"  # Options: "sequential", "random"
+SELECTION_MODE = "sequential"  # Options: "sequential", "random"
 # If random, how many total runs (can be more than the number of images)
 NUM_RANDOM_RUNS = 500
 

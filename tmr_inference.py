@@ -98,7 +98,7 @@ def vote_and_merge(clusters):
         clusters (list): List of clusters from cluster_predictions_for_voting()
 
     Returns:
-        list: Final voted predictions in same format as baseline_inference.py
+        list: Final voted predictions in same format as notechnique_inference.py
     """
     voted_predictions = []
 
