@@ -134,7 +134,7 @@ def run_single_inference(technique, model_path, image_path, label_path, output_p
         # All techniques now use consistent naming: run_{technique}_inference
         function_name = f"run_{technique}_inference"
         try:
-            inference_function = getattr(module, function_name)
+            inference_function = getattr(module, function_name) #samething as module.run_notechnique_inference because module = import notechnique_inference
         except AttributeError:
             error_result = {
                 "technique": technique,

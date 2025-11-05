@@ -17,10 +17,10 @@ set -e
 # ============================================================================
 # CONFIGURATION - CHANGE THESE IF NEEDED
 # ============================================================================
-PROJECT_ROOT="/home/shrec/NischalNVBitFi/RemoteObjectDetectionModelWithFaultTolerantTechniques"
-NVBITFI_ROOT="/home/shrec/NischalNVBitFi/nvbit_release_aarch64/nvbitfi"
-MODEL_PATH="${PROJECT_ROOT}/Models/yolov8n.pt"
-DATASET_LIST="${PROJECT_ROOT}/validation_dataset_list.txt"
+PROJECT_ROOT="/home/shrec/NischalNVBitFi/RemoteObjectDetectionModelWithFaultTolerantTechniques" #this is correct path
+NVBITFI_ROOT="/home/shrec/NischalNVBitFi/nvbit_release_aarch64/nvbitfi" #correct path
+MODEL_PATH="${PROJECT_ROOT}/Plane_Ship_Detection/Plane_Ship_Model.pt" #corrected to the right path
+DATASET_LIST="${PROJECT_ROOT}/validation_dataset_list.txt" #correct path
 
 # ============================================================================
 # SETUP FUNCTION - Run this once
@@ -30,48 +30,55 @@ setup() {
     echo "NVBitFI Setup"
     echo "=========================================="
 
-    cd ${PROJECT_ROOT}
-
-    # Create Models directory
-    echo "Creating Models directory..."
-    mkdir -p Models
-    [ -f yolov8n.pt ] && mv yolov8n.pt Models/ || echo "Model already in place"
-
-    # Rename baseline to notechnique if needed
-    if [ -f baseline_inference.py ] && [ ! -f notechnique_inference.py ]; then
-        echo "Renaming baseline_inference.py to notechnique_inference.py..."
-        mv baseline_inference.py notechnique_inference.py
-    fi
+    cd ${PROJECT_ROOT} #go to project root
 
     # Create workload directories for each technique
-    for TECH in notechnique tmr; do
-        echo "Setting up yolov8_${TECH}..."
-        WORKLOAD_DIR="${NVBITFI_ROOT}/test-apps/yolov8_${TECH}"
+    for TECH in notechnique tmr; do #TODO: DO NOT REMOVE: WIll need to add more techniques later
+        echo "Setting up ${TECH}..."
+        WORKLOAD_DIR="${NVBITFI_ROOT}/test-apps/${TECH}"
         mkdir -p ${WORKLOAD_DIR}
 
-        # Create run.sh
+        # Create output directory for this technique's fault results in project folder
+        TECHNIQUE_OUTPUT_DIR="${PROJECT_ROOT}/output/${TECH}_fault/results"
+        mkdir -p ${TECHNIQUE_OUTPUT_DIR}
+
+        # Create run.sh with injection counter
         cat > ${WORKLOAD_DIR}/run.sh <<EOF
 #!/bin/bash
+# NVBitFI doesn't set RUN_ID automatically, so we use a counter file
+COUNTER_FILE="${TECHNIQUE_OUTPUT_DIR}/.run_counter"
+if [ -f "\${COUNTER_FILE}" ]; then
+    RUN_ID=\$(cat "\${COUNTER_FILE}")
+else
+    RUN_ID=0
+fi
+# Increment for next run
+echo \$((RUN_ID + 1)) > "\${COUNTER_FILE}"
+
+OUTPUT_FILE="${TECHNIQUE_OUTPUT_DIR}/result_\${RUN_ID}.json"
+
 eval \${PRELOAD_FLAG} python3 ${PROJECT_ROOT}/run_single_inference.py \\
     --technique ${TECH} \\
     --model ${MODEL_PATH} \\
     --dataset-list ${DATASET_LIST} \\
     --random-image \\
-    --output result.json > stdout.txt 2> stderr.txt
+    --output "\${OUTPUT_FILE}" > stdout.txt 2> stderr.txt
 EOF
         chmod +x ${WORKLOAD_DIR}/run.sh
 
-        # Create sdc_check.sh
+        # Create minimal sdc_check.sh
+        # Only checks if program crashed - real SDC analysis done post-processing
         cat > ${WORKLOAD_DIR}/sdc_check.sh <<'EOF'
 #!/bin/bash
-diff stdout.txt ${APP_DIR}/golden_stdout.txt > stdout_diff.log 2>&1 || touch stdout_diff.log
-diff stderr.txt ${APP_DIR}/golden_stderr.txt > stderr_diff.log 2>&1 || touch stderr_diff.log
+# Minimal check - NVBitFI requires these files
 touch diff.log
 touch special_check.log
+# NVBitFI will detect crashes via exit codes
+# Real SDC classification happens later with aggregate_fault_results.py
 EOF
         chmod +x ${WORKLOAD_DIR}/sdc_check.sh
 
-        # Generate golden output
+        # Generate golden output (for NVBitFI's internal checks)
         echo "Generating golden output for ${TECH}..."
         cd ${WORKLOAD_DIR}
         export PRELOAD_FLAG=""
@@ -80,17 +87,38 @@ EOF
         bash run.sh
         mv stdout.txt golden_stdout.txt 2>/dev/null || true
         mv stderr.txt golden_stderr.txt 2>/dev/null || true
-        echo "✓ Golden output created for ${TECH}"
+        echo "Golden output created for ${TECH}"
+
+        # Reset counter for actual fault injection runs
+        rm -f "${TECHNIQUE_OUTPUT_DIR}/.run_counter"
+        echo "0" > "${TECHNIQUE_OUTPUT_DIR}/.run_counter"
     done
+
+    echo ""
+    echo "=========================================="
+    echo "IMPORTANT: Generate Golden Predictions"
+    echo "=========================================="
+    echo "Before running fault injection, generate golden predictions by running:"
+    echo "  python3 run_evaluations.py"
+    echo ""
+    echo "Make sure to configure run_evaluations.py with:"
+    echo "  - RUN_TYPE = 'nofault'"
+    echo "  - WORKER_SCRIPT_NAME for each technique"
+    echo ""
+    echo "Golden predictions will be saved to:"
+    echo "  output/notechnique_nofault/golden_predictions/"
+    echo "  output/tmr_nofault/golden_predictions/"
 
     # Update NVBitFI params.py
     echo "Updating NVBitFI params.py..."
     PARAMS_FILE="${NVBITFI_ROOT}/scripts/params.py"
     cp ${PARAMS_FILE} ${PARAMS_FILE}.backup
 
+#TODO: DO NOT REMOVE: will need to add other techniques info later down in new_apps
+
     # Check if already updated
-    if grep -q "yolov8_notechnique" ${PARAMS_FILE}; then
-        echo "✓ params.py already updated"
+    if grep -q "notechnique" ${PARAMS_FILE}; then
+        echo "params.py already updated"
     else
         # Add workloads to apps dictionary
         python3 << 'PYEOF'
@@ -100,18 +128,18 @@ params_file = "/home/shrec/NischalNVBitFi/nvbit_release_aarch64/nvbitfi/scripts/
 with open(params_file, 'r') as f:
     content = f.read()
 
-# Add yolov8 workloads before the closing brace of apps dict
-new_apps = """        'yolov8_notechnique': [
-                        NVBITFI_HOME + '/test-apps/yolov8_notechnique',
+# Add model workloads before the closing brace of apps dict
+new_apps = """        'notechnique': [
+                        NVBITFI_HOME + '/test-apps/notechnique',
                         'run.sh',
-                        NVBITFI_HOME + '/test-apps/yolov8_notechnique/',
+                        NVBITFI_HOME + '/test-apps/notechnique/',
                         5,
                         ""
                 ],
-        'yolov8_tmr': [
-                        NVBITFI_HOME + '/test-apps/yolov8_tmr',
+        'tmr': [
+                        NVBITFI_HOME + '/test-apps/tmr',
                         'run.sh',
-                        NVBITFI_HOME + '/test-apps/yolov8_tmr/',
+                        NVBITFI_HOME + '/test-apps/tmr/',
                         15,
                         ""
                 ],"""
@@ -128,7 +156,7 @@ content = content.replace("THRESHOLD_JOBS = 25", "THRESHOLD_JOBS = 10000")
 with open(params_file, 'w') as f:
     f.write(content)
 
-print("✓ params.py updated")
+print("params.py updated")
 PYEOF
     fi
 
@@ -149,12 +177,12 @@ run_campaign() {
     TECHNIQUE=$1
 
     if [ -z "$TECHNIQUE" ]; then
-        echo "Error: Please specify technique (notechnique or tmr)"
+        echo "Error: Please specify technique (notechnique or tmr)" #TODO
         echo "Usage: ./setup_and_run_nvbitfi.sh run <technique>"
         exit 1
     fi
 
-    WORKLOAD_NAME="yolov8_${TECHNIQUE}"
+    WORKLOAD_NAME="${TECHNIQUE}"
 
     echo "=========================================="
     echo "Running NVBitFI Campaign: ${WORKLOAD_NAME}"
@@ -186,8 +214,16 @@ run_campaign() {
     echo "=========================================="
     echo "Campaign Complete!"
     echo "=========================================="
-    echo "Results: ${NVBITFI_ROOT}/logs/${WORKLOAD_NAME}/"
-}
+       echo "NVBitFI logs: ${NVBITFI_ROOT}/logs/${WORKLOAD_NAME}/"
+    echo "Result JSONs: ${PROJECT_ROOT}/output/${TECHNIQUE}_fault/results/"
+    echo ""
+    echo "To analyze fault outcomes, run:"
+    echo "  python3 aggregate_fault_results.py \\"
+    echo "    --technique ${TECHNIQUE} \\"
+    echo "    --results-dir output/${TECHNIQUE}_fault/results \\"
+    echo "    --golden-dir output/${TECHNIQUE}_nofault/golden_predictions \\"
+    echo "    --output output/${TECHNIQUE}_fault/summary_report.json"
+    }
 
 # ============================================================================
 # MAIN
