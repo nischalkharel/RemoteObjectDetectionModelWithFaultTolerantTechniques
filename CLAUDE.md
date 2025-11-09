@@ -1,5 +1,15 @@
 READ FIRST!!! THIS IS VERY IMPORTANT.
 - THIS IS BEING WRITTEN BY NISCHAL KHAREL, the user.
+
+## DEVELOPMENT ENVIRONMENT SETUP - CRITICAL INFO
+**VS Code Terminal Location:** This VS Code is running on Windows PC (nisch@NischalLabPC)
+**Target Device:** Jetson Xavier NX (shrenx@ubuntu) - accessed via SSH
+**IMPORTANT:** Claude cannot directly execute commands on the Xavier. When testing or running commands on the Xavier device, Claude will ask Nischal to run them and provide the terminal output back.
+
+Working directory structure:
+- **PC:** `C:\Users\nisch\Documents\JetsonXavierRun\RemoteObjectDetectionModelWithFaultTolerantTechniques\` (for code development)
+- **Xavier:** `~/Nischal_NVBitFi/RemoteObjectDetectionWithFaultTolerantTechniques/` (project files)
+- **Xavier:** `~/Nischal_NVBitFi/nvbit_release/` (NVBit 1.5.5 installation - SEPARATE directory)
 I could not get NVBitFi to be compatable with Orin Nano. So I had to pivid to Jetson Xavier NX. I finally got it pulled down and installed and ran the ./test.sh and it seems like it worked. Now we need to edit setup_and_run_nvbitfi.sh according to how this new platform supports it. Currently the CUDA on this xavier is 10.2. and NVBit is 1.5.5. This is 
 
 Here is more info about the board.
@@ -111,11 +121,13 @@ make sure to keep everything simple and followable. no need to make a bunch of r
 2. `tmr` - Triple Modular Redundancy (Run 3, Vote 1)
 
 ### Experimental Setup:
-- Platform: Jetson Orin Nano (sm_87, CUDA 12.6)
-- Model: YOLOv8n
+- Platform: Jetson Xavier NX (sm_72, CUDA 10.2)
+- NVBit Version: 1.5.5
+- Model: YOLOv8n (Plane/Ship Detection)
 - Dataset: 112 validation images
 - Fault Injection: NVBitFI (10,000 injections per technique)
 - Fault Model: Single-bit flips in general-purpose (GP) instructions
+- Conda Environment: nvbitfi_env
 
 ### Key Files:
 - `notechnique_inference.py` - Baseline inference

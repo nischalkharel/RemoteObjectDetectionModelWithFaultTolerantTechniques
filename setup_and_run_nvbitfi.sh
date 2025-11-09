@@ -15,12 +15,29 @@
 set -e
 
 # ============================================================================
-# CONFIGURATION - CHANGE THESE IF NEEDED
+# CONFIGURATION - ADJUST FOR YOUR XAVIER NX SETUP
 # ============================================================================
-PROJECT_ROOT="/home/shrec/NischalNVBitFi/RemoteObjectDetectionModelWithFaultTolerantTechniques" #this is correct path
-NVBITFI_ROOT="/home/shrec/NischalNVBitFi/nvbit_release_aarch64/nvbitfi" #correct path
-MODEL_PATH="${PROJECT_ROOT}/Plane_Ship_Detection/Plane_Ship_Model.pt" #corrected to the right path
-DATASET_LIST="${PROJECT_ROOT}/validation_dataset_list.txt" #correct path
+# Xavier NX paths (using ~ for home directory on Xavier: shrenx@ubuntu)
+PROJECT_ROOT="$HOME/Nischal_NVBitFi/RemoteObjectDetectionWithFaultTolerantTechniques"
+NVBITFI_ROOT="$HOME/Nischal_NVBitFi/nvbit_release/tools/nvbitfi"
+MODEL_PATH="${PROJECT_ROOT}/Plane_Ship_Detection/Plane_Ship_Model.pt"
+DATASET_LIST="${PROJECT_ROOT}/validation_dataset_list.txt"
+
+# ============================================================================
+# ENVIRONMENT SETUP
+# ============================================================================
+# Set NVBITFI_HOME if not already set (required by NVBitFI)
+if [ -z "$NVBITFI_HOME" ]; then
+    export NVBITFI_HOME="${NVBITFI_ROOT}"
+    echo "Setting NVBITFI_HOME=${NVBITFI_HOME}"
+fi
+
+# Verify NVBITFI_HOME is set correctly
+if [ ! -d "$NVBITFI_HOME" ]; then
+    echo "Error: NVBITFI_HOME directory does not exist: $NVBITFI_HOME"
+    echo "Please check your paths and try again."
+    exit 1
+fi
 
 # ============================================================================
 # SETUP FUNCTION - Run this once
@@ -121,9 +138,10 @@ EOF
         echo "params.py already updated"
     else
         # Add workloads to apps dictionary
-        python3 << 'PYEOF'
+        python3 << PYEOF
 import sys
-params_file = "/home/shrec/NischalNVBitFi/nvbit_release_aarch64/nvbitfi/scripts/params.py"
+import os
+params_file = os.path.expanduser("~/Nischal_NVBitFi/nvbit_release/tools/nvbitfi/scripts/params.py")
 
 with open(params_file, 'r') as f:
     content = f.read()
