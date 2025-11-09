@@ -10,6 +10,71 @@ Working directory structure:
 - **PC:** `C:\Users\nisch\Documents\JetsonXavierRun\RemoteObjectDetectionModelWithFaultTolerantTechniques\` (for code development)
 - **Xavier:** `~/Nischal_NVBitFi/RemoteObjectDetectionWithFaultTolerantTechniques/` (project files)
 - **Xavier:** `~/Nischal_NVBitFi/nvbit_release/` (NVBit 1.5.5 installation - SEPARATE directory)
+
+---
+
+## CURRENT PROGRESS AND STATUS (Updated: 2025-11-09)
+
+### ✅ Completed:
+1. **Setup Script Updated** - `setup_and_run_nvbitfi.sh` configured for Xavier NX paths
+2. **NVBITFI_HOME Handling** - Script automatically sets environment variable if not present
+3. **Xavier Requirements File** - Created `requirements_xavier.txt` with CUDA 10.2 compatible packages
+
+### 🔄 Currently Working On:
+**Installing Python Dependencies on Xavier NX**
+
+### ⏭️ Next Steps:
+1. Pull latest changes on Xavier: `git pull origin main`
+2. Install Python dependencies (see instructions below)
+3. Test `run_evaluations.py` to generate golden predictions
+4. Run NVBitFI setup: `./setup_and_run_nvbitfi.sh setup`
+5. Run fault injection campaigns
+
+---
+
+## INSTALLATION INSTRUCTIONS FOR XAVIER NX
+
+### Step 1: Pull Latest Code
+```bash
+cd ~/Nischal_NVBitFi/RemoteObjectDetectionWithFaultTolerantTechniques
+git pull origin main
+conda activate nvbitfi_env
+```
+
+### Step 2: Check PyTorch Installation
+First, check if PyTorch is already installed and working with CUDA:
+```bash
+python3 -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA Available: {torch.cuda.is_available()}'); print(f'CUDA Version: {torch.version.cuda}')"
+```
+
+**If PyTorch is NOT installed or not working with CUDA 10.2:**
+You need to install PyTorch with CUDA 10.2 support. For Jetson, use NVIDIA's pre-built wheels:
+```bash
+# Install PyTorch 1.10.0 for CUDA 10.2 (if needed)
+pip3 install torch==1.10.0 torchvision==0.11.0 -f https://download.pytorch.org/whl/cu102/torch_stable.html
+```
+
+### Step 3: Install Project Dependencies
+```bash
+pip install -r requirements_xavier.txt
+```
+
+### Step 4: Verify Installation
+```bash
+python3 -c "import numpy, cv2, ultralytics; print('All packages imported successfully!')"
+```
+
+### Step 5: Test No-Fault Inference
+```bash
+python3 run_evaluations.py
+```
+
+This should:
+- Process all 112 validation images
+- Calculate mAP
+- Save golden predictions to `output/notechnique_nofault/golden_predictions/`
+
+---
 I could not get NVBitFi to be compatable with Orin Nano. So I had to pivid to Jetson Xavier NX. I finally got it pulled down and installed and ran the ./test.sh and it seems like it worked. Now we need to edit setup_and_run_nvbitfi.sh according to how this new platform supports it. Currently the CUDA on this xavier is 10.2. and NVBit is 1.5.5. This is 
 
 Here is more info about the board.
