@@ -1,0 +1,27 @@
+# Requirements for Jetson Xavier NX (CUDA 10.2, Python 3.10)
+# Install with: pip install -r requirements_xavier.txt
+
+# Core numerical and scientific computing
+numpy>=1.19.0,<2.0.0
+scipy>=1.5.0
+
+# Image Processing
+opencv-python>=4.5.0
+Pillow>=8.0.0
+
+# Object Detection - Ultralytics YOLOv8
+ultralytics>=8.0.0
+
+# Data Processing
+PyYAML>=5.4.0
+
+# Visualization
+matplotlib>=3.3.0
+
+# Utilities
+requests>=2.25.0
+psutil>=5.8.0
+filelock>=3.0.0
+
+# Note: PyTorch and torchvision should be installed separately using NVIDIA's wheels
+# For Jetson Xavier NX with CUDA 10.2, install PyTorch first before running this
