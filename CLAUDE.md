@@ -1,4 +1,6 @@
 READ FIRST!!! THIS IS VERY IMPORTANT.
+FIRSTLY I WANT YOU TO ALWAYS DO ONLINE RESEARCH WHEN DEBUGGING OR FIGURING COMPATABILITY ISSUES AS PEOPLE MIGHT HAVE RUN INTO SIMILAR ISSUES AND SOLVED IT A CERTAIN WAY.
+
 - THIS IS BEING WRITTEN BY NISCHAL KHAREL, the user.
 
 ## DEVELOPMENT ENVIRONMENT SETUP - CRITICAL INFO
@@ -19,52 +21,141 @@ Working directory structure:
 1. **Setup Script Updated** - `setup_and_run_nvbitfi.sh` configured for Xavier NX paths
 2. **NVBITFI_HOME Handling** - Script automatically sets environment variable if not present
 3. **Xavier Requirements File** - Created `requirements_xavier.txt` with CUDA 10.2 compatible packages
+4. **PyTorch Installation** - PyTorch 1.10.0 with CUDA 10.2 support installed in Python 3.6 environment
+5. **Torchvision Installation** - Built torchvision 0.11.1 from source for Python 3.6
+6. **Ultralytics Installation** - Python 3.6 compatible version (8.0.208) installed
+7. **All Dependencies Installed** - opencv-python, matplotlib, scipy, pandas, etc. all working
 
 ### 🔄 Currently Working On:
-**Installing Python Dependencies on Xavier NX**
+**Setting up NVBitFI pipeline for fault injection experiments**
 
 ### ⏭️ Next Steps:
-1. Pull latest changes on Xavier: `git pull origin main`
-2. Install Python dependencies (see instructions below)
-3. Test `run_evaluations.py` to generate golden predictions
-4. Run NVBitFI setup: `./setup_and_run_nvbitfi.sh setup`
-5. Run fault injection campaigns
+1. Test `run_evaluations.py` to generate golden predictions
+2. Run NVBitFI setup: `./setup_and_run_nvbitfi.sh setup`
+3. Run fault injection campaigns
 
 ---
 
 ## INSTALLATION INSTRUCTIONS FOR XAVIER NX
 
-### Step 1: Pull Latest Code
+**CRITICAL:** JetPack 4.6 (R32.7.6) with CUDA 10.2 requires Python 3.6 for PyTorch compatibility.
+- PyTorch 1.10.0 is the recommended version for CUDA 10.2
+- NVIDIA's pre-built wheels only support Python 3.6 for JetPack 4.6
+- Must set `OPENBLAS_CORETYPE=ARMV8` to avoid "Illegal instruction" errors
+
+### Step 1: Create Python 3.6 Conda Environment
 ```bash
 cd ~/Nischal_NVBitFi/RemoteObjectDetectionWithFaultTolerantTechniques
-git pull origin main
-conda activate nvbitfi_env
+conda create -n nvbitfi_py36 python=3.6 -y
+conda activate nvbitfi_py36
 ```
 
-### Step 2: Check PyTorch Installation
-First, check if PyTorch is already installed and working with CUDA:
+### Step 2: Install System Dependencies
+```bash
+sudo apt-get install -y libopenblas-base libopenmpi-dev libomp-dev
+```
+
+### Step 3: Install PyTorch 1.10.0 with CUDA 10.2
+```bash
+# Download NVIDIA's pre-built PyTorch wheel for Jetson
+wget https://nvidia.box.com/shared/static/fjtbno0vpo676a25cgvuqc1wty0fkkg6.whl -O torch-1.10.0-cp36-cp36m-linux_aarch64.whl
+
+# Install PyTorch
+pip3 install torch-1.10.0-cp36-cp36m-linux_aarch64.whl
+```
+
+### Step 4: Fix OpenBLAS Issue (CRITICAL)
+```bash
+# Set environment variable (temporary)
+export OPENBLAS_CORETYPE=ARMV8
+
+# Make it permanent by adding to .bashrc
+echo 'export OPENBLAS_CORETYPE=ARMV8' >> ~/.bashrc
+```
+
+### Step 5: Verify PyTorch Installation
 ```bash
 python3 -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA Available: {torch.cuda.is_available()}'); print(f'CUDA Version: {torch.version.cuda}')"
 ```
 
-**If PyTorch is NOT installed or not working with CUDA 10.2:**
-You need to install PyTorch with CUDA 10.2 support. For Jetson, use NVIDIA's pre-built wheels:
-```bash
-# Install PyTorch 1.10.0 for CUDA 10.2 (if needed)
-pip3 install torch==1.10.0 torchvision==0.11.0 -f https://download.pytorch.org/whl/cu102/torch_stable.html
+Expected output:
+```
+PyTorch: 1.10.0
+CUDA Available: True
+CUDA Version: 10.2
 ```
 
-### Step 3: Install Project Dependencies
+### Step 6: Install Git and Build Dependencies
 ```bash
-pip install -r requirements_xavier.txt
+# Update package list and install git plus torchvision build dependencies
+sudo apt-get update
+sudo apt-get install -y git libjpeg-dev zlib1g-dev libpython3-dev libopenblas-dev libavcodec-dev libavformat-dev libswscale-dev
+
+# Clean up space if needed
+sudo apt-get clean
+sudo apt-get autoremove -y
 ```
 
-### Step 4: Verify Installation
+### Step 7: Install OpenCV and Python Dependencies
 ```bash
-python3 -c "import numpy, cv2, ultralytics; print('All packages imported successfully!')"
+# Install opencv-python (specific version for Python 3.6)
+pip install opencv-python==4.5.3.56
+
+# Install other Python dependencies
+pip install matplotlib==3.3.4 scipy==1.5.4 pandas==1.1.5 pyyaml requests tqdm seaborn psutil py-cpuinfo importlib-metadata
 ```
 
-### Step 5: Test No-Fault Inference
+### Step 8: Build and Install Torchvision 0.11.1
+```bash
+# Clone torchvision v0.11.1 (compatible with PyTorch 1.10.0)
+cd ~
+git clone --branch v0.11.1 https://github.com/pytorch/vision torchvision
+
+# Build and install torchvision (takes 10-30 minutes)
+cd torchvision
+export BUILD_VERSION=0.11.1
+python3 setup.py install --user
+
+# Return to project directory
+cd ~/Nischal_NVBitFi/RemoteObjectDetectionWithFaultTolerantTechniques
+```
+
+### Step 9: Install Python 3.6 Compatible Ultralytics
+```bash
+# Download Python 3.6 compatible ultralytics (v8.0.208, walrus operators removed)
+wget https://github.com/aminalaghband/jetson-nano/archive/refs/heads/main.zip -O ultralytics_py36.zip
+
+# Extract the archive
+unzip ultralytics_py36.zip
+
+# Extract the tar.gz inside
+cd jetson-nano-main
+tar -xzf ultralytics-8.0.208.tar.gz
+
+# Copy ultralytics to project directory
+cp -r ultralytics-8.0.208/ultralytics ~/Nischal_NVBitFi/RemoteObjectDetectionWithFaultTolerantTechniques/
+
+# Clean up
+cd ~
+rm -rf jetson-nano-main ultralytics_py36.zip
+
+# Return to project directory
+cd ~/Nischal_NVBitFi/RemoteObjectDetectionWithFaultTolerantTechniques
+```
+
+### Step 10: Verify Complete Installation
+```bash
+# Test ultralytics import
+python3 -c 'import ultralytics; print("Ultralytics imported successfully")'
+
+# Test YOLO class
+python3 -c 'from ultralytics import YOLO; print("YOLO class imported successfully")'
+
+# Test loading the model
+python3 -c 'from ultralytics import YOLO; model = YOLO("Plane_Ship_Detection/Plane_Ship_Model.pt"); print("Model loaded successfully")'
+```
+
+### Step 11: Test No-Fault Inference
 ```bash
 python3 run_evaluations.py
 ```
@@ -73,6 +164,97 @@ This should:
 - Process all 112 validation images
 - Calculate mAP
 - Save golden predictions to `output/notechnique_nofault/golden_predictions/`
+
+---
+
+## TROUBLESHOOTING & QUICK TIPS
+
+### Problem 1: Walrus Operator Syntax Error with Ultralytics
+**Error:** `SyntaxError: invalid syntax` on lines with `:=` operator
+```
+File "ultralytics/utils/git.py", line 78
+    if s := self._read(rf):
+          ^
+SyntaxError: invalid syntax
+```
+
+**Root Cause:**
+- Walrus operator (`:=`) was introduced in Python 3.8
+- Official ultralytics requires Python >= 3.8
+- JetPack 4.6 only supports Python 3.6 PyTorch wheels
+- Cannot use Python 3.7 either (walrus operator still not available)
+
+**Solution:**
+Use modified ultralytics version 8.0.208 from `aminalaghband/jetson-nano` repository where all 30 instances of walrus operators have been replaced with Python 3.6 compatible syntax.
+
+### Problem 2: No Pre-built Torchvision Wheel for Python 3.6
+**Error:** Can't find torchvision wheel compatible with PyTorch 1.10.0 and Python 3.6
+
+**Root Cause:**
+- NVIDIA only provides PyTorch wheels for JetPack 4.6, not torchvision
+- PyPI torchvision 0.11.1 only has wheels for Python 3.8+
+
+**Solution:**
+Build torchvision 0.11.1 from source. Takes 10-30 minutes but works perfectly.
+
+### Problem 3: Disk Space Issues During Git Clone
+**Error:** `fatal: write error: No space left on device`
+
+**Quick Fixes:**
+```bash
+# Clean apt cache
+sudo apt-get clean
+sudo apt-get autoremove -y
+
+# Check what's using space
+du -sh ~/* | sort -hr | head -10
+
+# Clean conda cache if using conda
+conda clean --all -y
+```
+
+### Problem 4: Missing importlib_metadata Module
+**Error:** `ModuleNotFoundError: No module named 'importlib_metadata'`
+
+**Solution:**
+```bash
+pip install importlib-metadata
+```
+This is a backport package needed for Python 3.6 compatibility.
+
+### Problem 5: Bash History Expansion with Exclamation Marks
+**Error:** `-bash: !': event not found` when using double quotes in python commands
+
+**Solution:**
+Use single quotes instead of double quotes:
+```bash
+# Wrong (causes bash error)
+python3 -c "print('Hello!')"
+
+# Correct
+python3 -c 'print("Hello!")'
+```
+
+### Quick Reference: Package Versions That Work
+```
+Python: 3.6
+PyTorch: 1.10.0
+Torchvision: 0.11.1 (built from source)
+Ultralytics: 8.0.208 (Python 3.6 modified version)
+OpenCV: 4.5.3.56
+NumPy: 1.19.5
+Matplotlib: 3.3.4
+Scipy: 1.5.4
+Pandas: 1.1.5
+CUDA: 10.2
+JetPack: 4.6 (R32.7.6)
+```
+
+### Why Python 3.6 Specifically?
+- **CUDA 10.2** (JetPack 4.6) → requires PyTorch 1.10.0
+- **PyTorch 1.10.0** wheels from NVIDIA only available for Python 3.6
+- **Python 3.7** won't help - ultralytics still needs Python 3.8+ (walrus operator)
+- **Upgrading to Python 3.8** manually would require rebuilding PyTorch from source (very time-consuming and error-prone)
 
 ---
 I could not get NVBitFi to be compatable with Orin Nano. So I had to pivid to Jetson Xavier NX. I finally got it pulled down and installed and ran the ./test.sh and it seems like it worked. Now we need to edit setup_and_run_nvbitfi.sh according to how this new platform supports it. Currently the CUDA on this xavier is 10.2. and NVBit is 1.5.5. This is 
@@ -186,13 +368,14 @@ make sure to keep everything simple and followable. no need to make a bunch of r
 2. `tmr` - Triple Modular Redundancy (Run 3, Vote 1)
 
 ### Experimental Setup:
-- Platform: Jetson Xavier NX (sm_72, CUDA 10.2)
+- Platform: Jetson Xavier NX (sm_72, CUDA 10.2, JetPack 4.6 R32.7.6)
 - NVBit Version: 1.5.5
 - Model: YOLOv8n (Plane/Ship Detection)
 - Dataset: 112 validation images
 - Fault Injection: NVBitFI (10,000 injections per technique)
 - Fault Model: Single-bit flips in general-purpose (GP) instructions
-- Conda Environment: nvbitfi_env
+- Conda Environment: nvbitfi_py36 (Python 3.6)
+- PyTorch Version: 1.10.0 with CUDA 10.2
 
 ### Key Files:
 - `notechnique_inference.py` - Baseline inference
